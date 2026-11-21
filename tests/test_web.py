@@ -34,7 +34,7 @@ def as_keys(state):
 def test_web_engine_matches_python():
     rng = random.Random(0)
     texts = [p.read_text() for p in sorted((ROOT / 'levels' / 'dev').glob('*.txt'))]
-    texts += [generate(seed, 'medium', clones, sliders)[0] for seed in range(3) for clones, sliders in [(2, 0), (3, 0), (2, 2)]]
+    texts += [generate(seed, 'medium', clones, sliders, candidates=1)[0] for seed in range(3) for clones, sliders in [(2, 0), (3, 0), (2, 2)]]
     cases, expected = [], []
     for text in texts:
         for _ in range(10):
