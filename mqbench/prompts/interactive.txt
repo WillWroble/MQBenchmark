@@ -1,0 +1,14 @@
+You are playing Mirror Quest, a puzzle game.
+
+Rules:
+{rules}
+{legend}
+
+Here is the level:
+
+{board}
+
+You play one action at a time, and after each one you'll see the board. Actions are U (up), D (down), L (left), R (right), UNDO (take back your last move) and RESET (go back to the start).
+
+End each reply with one line in this form:
+ACTION: <one action>

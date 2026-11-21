@@ -1,0 +1,14 @@
+You are playing Mirror Quest, a puzzle game.
+
+Rules:
+{rules}
+{legend}
+
+Here is the level:
+
+{board}
+
+Plan a sequence of moves that solves the level. You won't see the board change, so work out the whole sequence before you answer. Moves are U (up), D (down), L (left) and R (right).
+
+End your reply with one line in this form:
+MOVES: <your moves, for example URRDL>

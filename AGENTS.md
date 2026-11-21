@@ -21,7 +21,8 @@ A no-code spatial planning benchmark for LLMs, built on the puzzle game Mirror Q
 - **Third-party assets:** the original project includes Unity Asset Store packs (backgrounds, UI kits, music, fonts) that generally can't be redistributed. Confirm the provenance of any asset before committing it.
 - **Modes:** one-shot (the full move list committed with no feedback) is the headline metric. Interactive mode is reported as a secondary metric.
 - **Scoring:** solve rate within a move budget (default 2× the minimum), plus moves relative to the minimum. In interactive mode, undone moves don't count, as in the game, but the model is capped at 5× the minimum in total actions, undos and resets included; total actions are logged. Human baselines are collected through the web version.
-- **Harness:** API-only, with no tool use, fixed prompts and full logging.
+- **Harness:** API-only, with no tool use, fixed prompts and full logging. Models are reached through OpenRouter and run with provider-default reasoning settings. Every call logs input, output and reasoning tokens, time and cost, so reasoning efficiency can be reported alongside accuracy. In interactive mode the model sends one action per turn and sees the board after each, as a human does. A scored evaluation samples 10 levels of each kind (clones × sliders × tier) from the stock.
+- **Level stock:** generated levels are built ahead of time by `scripts/grow_stock.py` into `levels/stock`, and scored sets are fresh seeded samples from it.
 - **Hosting:** GitHub (engine, generator, solver, harness, seeds), Hugging Face (dataset and leaderboard), and a public web version for human baselines.
 
 ## Licensing
