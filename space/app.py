@@ -19,6 +19,7 @@ from mqbench.solver import solve
 
 ROOT = Path(__file__).parent.parent
 PLAYS_REPO = 'inkling616/mqbench-human-plays'
+MODELS = ROOT / 'leaderboard' / 'models.json'  # written by python -m mqbench.report ... --json
 ACTIONS = {'U', 'D', 'L', 'R', 'undo', 'reset'}
 
 DATA = ROOT / 'data'
@@ -120,7 +121,7 @@ def leaderboard():
         humans.append({'tier': tier, 'clones': int(clones), 'sliders': sliders == '1', 'games': len(ps),
                        'solve_rate': len(solved) / len(ps),
                        'moves_over_minimum': sum(p['moves'] / p['minimum'] for p in solved) / len(solved) if solved else None})
-    return {'humans': humans, 'models': []}
+    return {'humans': humans, 'models': json.loads(MODELS.read_text()) if MODELS.exists() else []}
 
 
 app.mount('/', StaticFiles(directory=ROOT / 'web', html=True))

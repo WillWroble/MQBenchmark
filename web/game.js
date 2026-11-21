@@ -259,13 +259,40 @@ addEventListener('resize', () => { drawStars(); resize(); render(); });
 
 // Pages
 
+const KIND_NAMES = { '2-0': '2 clones', '2-1': '2 clones, sliders', '3-0': '3 clones', '3-1': '3 clones, sliders' };
+const TIERS = ['easy', 'medium', 'hard'];
+const pct = x => `${Math.round(x * 100)}%`;
+const thousands = x => x == null ? '–' : `${(x / 1000).toFixed(1)}k`;
+
+function showModels(models) {
+  const overall = models.filter(m => m.kind === 'all').sort((a, b) => b.solve_rate - a.solve_rate);
+  if (!overall.length) return;
+  $('models').innerHTML = `<table>
+    <thead><tr><th>Model</th><th class="num">Levels</th><th class="num">Solved</th><th class="num">Cut off</th><th class="num">Wrong</th>
+      <th class="num">Moves vs minimum</th><th class="num">Tokens per level</th><th class="num">Tokens per solve</th><th class="num">Cost per level</th></tr></thead>
+    <tbody>${overall.map(m => `<tr><td>${m.model}</td><td class="num">${m.levels}</td><td class="num"><b>${pct(m.solve_rate)}</b></td>
+      <td class="num">${pct(m.truncated)}</td><td class="num">${pct(m.wrong)}</td>
+      <td class="num">${m.moves_over_minimum ? m.moves_over_minimum.toFixed(2) + '×' : '–'}</td>
+      <td class="num">${thousands(m.output_tokens)}</td><td class="num">${thousands(m.output_tokens_per_solve)}</td>
+      <td class="num">$${(m.cost ?? 0).toFixed(2)}</td></tr>`).join('')}</tbody></table>`;
+  // kinds look like 'easy-2-0': sort by clones and sliders, then tier
+  const split = k => [k.slice(k.indexOf('-') + 1), TIERS.indexOf(k.split('-')[0])];
+  const kinds = [...new Set(models.map(m => m.kind).filter(k => k !== 'all' && k !== 'dev'))]
+    .sort((a, b) => split(a)[0].localeCompare(split(b)[0]) || split(a)[1] - split(b)[1]);
+  const cell = (model, kind) => models.find(m => m.model === model && m.kind === kind);
+  $('model-kinds').innerHTML = `<table>
+    <thead><tr><th>Solved, by kind of level</th>${overall.map(m => `<th class="num">${m.model}</th>`).join('')}</tr></thead>
+    <tbody>${kinds.map(k => `<tr><td>${KIND_NAMES[split(k)[0]]} · ${k.split('-')[0]}</td>
+      ${overall.map(m => `<td class="num">${cell(m.model, k) ? pct(cell(m.model, k).solve_rate) : '–'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
 async function showLeaderboard() {
-  const { humans } = await fetchJson('/api/leaderboard');
+  const { humans, models } = await fetchJson('/api/leaderboard');
+  showModels(models);
   if (!humans.length) {
     $('humans').innerHTML = '<p class="lede">No games yet. Play a benchmark level to start the baseline.</p>';
     return;
   }
-  const pct = x => `${Math.round(x * 100)}%`;
   $('humans').innerHTML = `<table>
     <thead><tr><th>Clones</th><th>Sliders</th><th>Difficulty</th><th class="num">Games</th><th class="num">Solved</th><th class="num">Moves vs minimum</th></tr></thead>
     <tbody>${humans.map(h => `<tr><td>${h.clones}</td><td>${h.sliders ? 'Yes' : 'No'}</td><td>${h.tier[0].toUpperCase() + h.tier.slice(1)}</td>

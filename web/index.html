@@ -62,13 +62,15 @@
 
   <main id="leaderboard" hidden>
     <section>
-      <h2>Humans</h2>
-      <p class="lede">Everyone's games on benchmark levels, by kind of level. Moves are counted only for solved games, as a multiple of the minimum.</p>
-      <div class="table" id="humans"></div>
+      <h2>Models</h2>
+      <p class="lede">One-shot: the model sees the board once and commits its whole move list. Solved means reaching the goals within 2× the minimum moves, with at most 65,536 output tokens. Cut off means it ran out of tokens before answering; wrong means it answered and failed.</p>
+      <div class="table" id="models"><p class="lede">No model results yet.</p></div>
+      <div class="table" id="model-kinds"></div>
     </section>
     <section>
-      <h2>Models</h2>
-      <p class="lede" id="models">No model results yet.</p>
+      <h2>Humans</h2>
+      <p class="lede">Everyone's first attempts at benchmark levels, by kind of level. Moves are counted only for solved games, as a multiple of the minimum.</p>
+      <div class="table" id="humans"></div>
     </section>
   </main>
 </div>

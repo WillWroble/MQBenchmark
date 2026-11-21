@@ -11,7 +11,7 @@ html, body { margin: 0; min-height: 100%; }
 body { background: var(--space); color: var(--ink); font: 15px/1.55 var(--body); }
 #stars { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; }
 .app {
-  max-width: 860px; margin: 0 auto; display: grid; gap: 20px;
+  max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px;
   padding-block: max(20px, env(safe-area-inset-top, 0px)) 40px;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
@@ -21,7 +21,8 @@ h2 { margin: 0 0 6px; font: 700 18px var(--pixel); color: var(--stone); }
 nav { display: flex; gap: 4px; }
 nav a { font: 400 14px var(--pixel); color: var(--muted); text-decoration: none; padding: 6px 12px; border: 2px solid transparent; }
 nav a[aria-current="page"] { color: var(--ink); border-color: var(--edge); background: var(--panel); }
-main { display: grid; gap: 18px; }
+main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+main section { min-width: 0; }
 
 button, select {
   font: 400 13px var(--pixel); color: var(--ink); background: var(--panel);
