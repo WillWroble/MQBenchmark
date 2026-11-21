@@ -17,3 +17,5 @@
 {"seed": 18, "text": "_....._\n_....._\n_#...#_\n_.#...#\n...~~S.\n_A.~~~~\n.G.~~..\n...~S..\n....#BG\n_CG....", "minimum": 7, "solution": "UUURDDD"}
 {"seed": 19, "text": "......_\n#....._\nGB.....\n.#..#__\n_.....#\n_.#.#._\n.~~S~._\n_~S..A_\n_...GC.\n#.G..._", "minimum": 10, "solution": "LURULLDDDL"}
 {"seed": 21, "text": ".AB....\n....#G.\n.....##\n#.C....\n#...G._\n~~~~.G_\nSS~.#__\n~~...._\n_......\n......_", "minimum": 12, "solution": "DDDRRUUURRDD"}
+{"seed": 20, "text": "...#.B_\n.G...._\n.#...._\n.....A_\n~S~G...\n~~~_...\nS~~.#._\n~~G.C._\n_....._\n_..#.._", "minimum": 11, "solution": "DLDULLURRDL"}
+{"seed": 22, "text": "_.....#\n_.#..._\n_.#..._\n_...G._\n_.C.G._\n_..._..\n..A_.._\n_...BG.\n..~S~S.\n_.~~~..", "minimum": 12, "solution": "DDLUUURURURD"}
