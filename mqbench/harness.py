@@ -26,6 +26,7 @@ LEVELS = ROOT.parent / 'levels'
 TEXT = {p.stem: p.read_text().strip() for p in [ROOT / 'rules.txt', *(ROOT / 'prompts').glob('*.txt')]}
 BUDGET = 2  # a level counts as solved within BUDGET × its minimum moves
 CAP = 5  # interactive mode stops after CAP × the minimum actions, undos and resets included
+MAX_TOKENS = 65536  # output limit per call, reasoning included, the same for every model
 TILE_NAMES = {GOAL: 'a goal', SMOOTH: 'smooth floor', TELEPORTER: 'a teleporter', EXIT: 'an exit-only teleporter', DRAIN: 'a drain'}
 
 
@@ -51,7 +52,7 @@ def openrouter(model):
     def complete(messages):
         # exclude: false asks for the reasoning text (a summary, for some providers) without changing its effort
         body = json.dumps({'model': model, 'messages': messages, 'usage': {'include': True},
-                           'reasoning': {'exclude': False}}).encode()
+                           'max_tokens': MAX_TOKENS, 'reasoning': {'exclude': False}}).encode()
         request = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions', body, {
             'Content-Type': 'application/json', 'Authorization': f'Bearer {os.environ.get("OPENROUTER_API_KEY", "proxy")}'})
         for wait in [5, 15, 60, 120, None]:
