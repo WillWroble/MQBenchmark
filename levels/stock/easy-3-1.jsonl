@@ -23,3 +23,9 @@
 {"seed": 23, "text": "_.G....\n#....._\n.G.B...\n...~~S_\n_.C~~~~\n_..~~~#\n#..S~~~\n_#...._\n._..#._\n_GA....", "minimum": 7, "solution": "RRUULLL"}
 {"seed": 26, "text": "....._\n..CA._\n..G.#_\n_.B.._\n.G.S~~\n...~~_\n...S~~\n..G.#_\n.#....\n......", "minimum": 12, "solution": "DDDDDLURUUDL"}
 {"seed": 25, "text": "_..G.._\n_...#._\n_#...._\n...#...\n_G.....\n__#BS~~\n....~~~\n.#..S~~\n_C.G~~~\n_...A#_", "minimum": 11, "solution": "RUUURUULDDL"}
+{"seed": 28, "text": ".....C_\n......_\n_.....B\n.~S.G..\n.~~~.._\n_~~.G.#\n_~~~S.#\n.....A_\n_....._\n_#G.#._", "minimum": 8, "solution": "DLDLDRRL"}
+{"seed": 29, "text": "_...._.\n_G...._\n_....#_\n.C...._\nG..B#._\n._...._\n_#.A~~#\n_G..~S~\n....~~~\n#...~S~", "minimum": 11, "solution": "URDDDDLUULL"}
+{"seed": 27, "text": "_.~~~~_\n_.S~~~#\n..S~~~.\n_.~~~._\n_...#..\n_....._\n_.G.GA_\n_.G.B._\n_......\n_.#C#._", "minimum": 9, "solution": "ULDDDRUUL"}
+{"seed": 30, "text": "_._..._\n_......\n._.G.._\n_~~~~#_\n.~S~~._\n_~~SAG_\n_~~~G..\n_....._\n_....B#\n_..C.__", "minimum": 8, "solution": "RULURRLU"}
+{"seed": 31, "text": "_....#_\n_#G..G_\n......_\n~~~#.._\nS~~~.._\n~S~.._.\n~~~G.A_\n_#BC.._\n_....._\n__...._", "minimum": 12, "solution": "DLUUUUURULRU"}
+{"seed": 32, "text": "_.~~S~\n_G~~S~\n_G~~B.\n#C~~~.\n_.....\n_#....\n.G....\n_..A##\n_...#.\n......", "minimum": 10, "solution": "LLURULDDLU"}

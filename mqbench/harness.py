@@ -60,7 +60,7 @@ def openrouter(model):
                 with urllib.request.urlopen(request, timeout=1800) as response:
                     data = json.load(response)
                 break
-            except (urllib.error.URLError, TimeoutError) as error:
+            except (urllib.error.URLError, TimeoutError, ConnectionError) as error:  # long calls can be dropped
                 if wait is None or getattr(error, 'code', 500) not in (408, 429, 500, 502, 503, 504):
                     raise
                 time.sleep(wait)
