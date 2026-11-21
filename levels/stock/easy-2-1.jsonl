@@ -59,3 +59,13 @@
 {"seed": 58, "text": "_..#...\n.~S~G._\n.~~~~._\n_S~....\n_~~..._\n_....._\n....GB_\n_....._\n_....#_\n_....A_", "minimum": 6, "solution": "UULUUU"}
 {"seed": 59, "text": "_..G...\n...B...\n_~S~~._\n.~~~.._\n.~~..._\n_~~S~._\n_..G.._\n_....A_\n_..._._\n.....##", "minimum": 11, "solution": "LLDDRRRLUUU"}
 {"seed": 62, "text": "_....._\n...S~~_\nB_G~~S~\n_..~~~_\n_....._\n.....__\n_....#.\n_....._\n_.A...#\n_.G..._", "minimum": 11, "solution": "URURRRLDDDL"}
+{"seed": 61, "text": ".......\n_B....#\n_#....#\n.....__\n.G.A.._\n#...S~~\n__..~S~\n_...~~~\nG..#.._\n_....._", "minimum": 10, "solution": "DRDLLDDRLL"}
+{"seed": 60, "text": "......_\n_....._\n_S~~~._\n.~~~.#.\n.~~~.__\n_S~..._\n..G..#_\n_._.._.\n_....A.\n.G..B..", "minimum": 11, "solution": "LUUURDDLDLL"}
+{"seed": 63, "text": "_......\n#.._.A.\n_....._\n_.~S.._\n_.~~...\n_.~~S~.\n......_\n_.GB..#\n_..#.._\n_...G__", "minimum": 12, "solution": "DDDDDDDLDLUR"}
+{"seed": 65, "text": "_....._\nB~~S~..\n_S~..._\n.~~..._\n_~~~.._\n.#G#...\n_..A.._\n_....._\n_......\n_...G.#", "minimum": 9, "solution": "RDDRRDLDL"}
+{"seed": 66, "text": ".#_..._\n#....._\n_..#.#_\n_.B.G..\n~~...._\n~~~~_._\n~S~_.._\n~S~.#.G\n.......\nA....._", "minimum": 10, "solution": "URRRRDRUUR"}
+{"seed": 64, "text": "..#..._\n_....._\n_..G#._\n_.~~~..\n..~~~.#\n_#~~G._\n._~S~SA\n.#...._\n_....B.\n_....._", "minimum": 9, "solution": "LUULLUURR"}
+{"seed": 67, "text": "#B....#\n_#..A._\n_#...._\n......_\n_~S..._\n_~~_.G_\n_~~S~._\n.~~~~G#\n_....._\n_....._", "minimum": 12, "solution": "DLLRDDRDDRDR"}
+{"seed": 68, "text": "_#.G..#\n_....._\n...B.._\n_#.#.._\n..#_.A_\n~~S.G._\n~~.....\n~S~~.._\n~~~.#._\n_....._", "minimum": 8, "solution": "DDDUULLR"}
+{"seed": 70, "text": ".....#_\n_.._.._\n_...#._\n..~~~~_\n_.~~~BG\n..~SS~.\n.A...._\n...G.._\n.#...._\n_....._", "minimum": 8, "solution": "LDRRDLUR"}
+{"seed": 69, "text": "......_\n_.##B._\n_..A...\n~~#..._\n~~S~#._\n~~~S...\n_...G._\n_.G....\n_....._\n.......", "minimum": 11, "solution": "DLRRDDLLDDL"}
