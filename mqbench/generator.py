@@ -1,19 +1,23 @@
 """Seeded level generator.
 
-A random board is explored exhaustively, and the goals go on the squares the clones take
-longest to reach together, so every level is solvable and its minimum is exact.
+A random island of floor is explored exhaustively, and the goals go on squares the clones
+can reach together in a number of moves within the tier, so every level is solvable and
+its minimum is exact.
 """
 import random
 
-from .engine import CLONES, FLOOR, GOAL, SLIDER, SMOOTH, VOID, WALL, Level
+from .engine import CLONES, DIRECTIONS, FLOOR, GOAL, SLIDER, SMOOTH, VOID, WALL, Level, add
 from .solver import path, search
 
+TIERS = {'easy': (6, 12), 'medium': (13, 24), 'hard': (25, 40)}
 
-def generate(seed, clones=2, sliders=0, rows=10, cols=7, void=0.25, wall=0.15):
+
+def generate(seed, tier, clones=2, sliders=0, rows=10, cols=7, land=0.55, wall=0.15):
     """Returns (level text, shortest solution)."""
-    rng = random.Random(seed)
+    lo, hi = TIERS[tier]
+    rng = random.Random(f'{seed}-{tier}-{clones}-{sliders}')
     while True:
-        board = random_board(rng, clones, sliders, rows, cols, void, wall)
+        board = random_board(rng, clones, sliders, rows, cols, land, wall)
         if board is None:
             continue
         level = Level(board)
@@ -24,18 +28,28 @@ def generate(seed, clones=2, sliders=0, rows=10, cols=7, void=0.25, wall=0.15):
             squares = frozenset(state[0])
             if all(level.tile(p) == FLOOR for p in squares) and not squares & set(level.start[0]):
                 candidates.setdefault(squares, state)
-        if candidates:
-            state = max(candidates.values(), key=depth.get)
+        in_tier = [s for s in candidates.values() if lo <= depth[s] <= hi]
+        if in_tier:
+            state = rng.choice(in_tier)
             return place_goals(board, state[0]), path(parents, state)
 
 
-def random_board(rng, clones, sliders, rows, cols, void, wall):
-    grid = [[rng.choices([VOID, WALL, FLOOR], [void, wall, 1 - void - wall])[0] for _ in range(cols)]
-            for _ in range(rows)]
+def random_board(rng, clones, sliders, rows, cols, land, wall):
+    """Grows one connected island of floor out of the void, then scatters walls on it."""
+    grid = [[VOID] * cols for _ in range(rows)]
+    island = [(rng.randrange(rows), rng.randrange(cols))]
+    while len(island) < land * rows * cols:
+        r, c = add(rng.choice(island), rng.choice(list(DIRECTIONS.values())))
+        if 0 <= r < rows and 0 <= c < cols and (r, c) not in island:
+            island.append((r, c))
+    for r, c in island:
+        grid[r][c] = WALL if rng.random() < wall else FLOOR
     if sliders:
-        h, w = rng.randint(2, 4), rng.randint(2, 4)
-        r0, c0 = rng.randrange(rows - h + 1), rng.randrange(cols - w + 1)
-        patch = [(r, c) for r in range(r0, r0 + h) for c in range(c0, c0 + w)]
+        r0, c0 = rng.choice(island)
+        patch = [(r, c) for r in range(r0, min(r0 + rng.randint(2, 4), rows))
+                 for c in range(c0, min(c0 + rng.randint(2, 4), cols))]
+        if len(patch) <= sliders:
+            return None
         for r, c in patch:
             grid[r][c] = SMOOTH
         for r, c in rng.sample(patch, sliders):
