@@ -70,15 +70,15 @@ class Level:
             ends = {}
             for p in [*clones, *sliders]:
                 ends.setdefault(moves.get(p, (p,))[0], []).append(p)
-            collision = next((ps for ps in ends.values() if len(ps) > 1), None)
-            if collision is None:
+            colliding = {p for ps in ends.values() if len(ps) > 1 for p in ps}
+            if not colliding:
                 break
-            tags = [moves[p][1] for p in collision if p in moves and moves[p][1]]
-            hit = [i for i in disabled - pushed if clones[i] in collision]
+            tags = {moves[p][1] for p in colliding if p in moves and moves[p][1]}
+            hit = {i for i in disabled - pushed if clones[i] in colliding}
             if tags:
-                banned.add(tags[0])
+                banned |= tags
             elif hit:
-                pushed.add(hit[0])
+                pushed |= hit
             else:
                 return state
         end = lambda p: moves.get(p, (p,))[0]

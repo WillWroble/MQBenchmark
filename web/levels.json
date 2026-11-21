@@ -1,0 +1,236 @@
+[
+ {
+  "group": "Original levels",
+  "name": "Level 1",
+  "text": "G....\nG....\n..#..\n.....\n..AB.",
+  "minimum": 8
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 2",
+  "text": "...AB\n.....\n..#..\n.....\n.....\n_._._\n_._._\n_._._\n_._._\n_G_G_",
+  "minimum": 15
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 3",
+  "text": "G#____G\n.____#.\n...__#.\n_.##__.\n_._....\n..__.##\n#.##.__\n_A..B.#",
+  "minimum": 17
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 4",
+  "text": "G____\n.__G_\n.T...\n.....\n..T..\nAB...\n____#",
+  "minimum": 13
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 5",
+  "text": "___#__\n#...._\n..__G_\n._____\n.#....\n..._#.\n____..\n..T_.#\n.G._.#\nTA._B_",
+  "minimum": 33
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 6",
+  "text": "_.G._\n.~~~.\nG~S~.\n.S~S.\n.~~~.\n_A.B_",
+  "minimum": 10
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 7",
+  "text": "G.~~~T\n__~~~~\n__~~~~\n_GTSS~\n__.AB_",
+  "minimum": 20
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 8",
+  "text": "___...\n__#~_.\n_#G~~T\n___D__\n___~__\nG.~S~_\n__.A__\n__S___\n__~B._\nT~~S._",
+  "minimum": 60
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 9",
+  "text": "__G~G_\n__~~T_\n__~S~~\n..S~S~\n~~~~~~\n~_~~~~\nt_A.B.",
+  "minimum": 37
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 10",
+  "text": ".G.G.\n~~D~~\n~DD~~\n~D~S~\n~~~D~\n~D~~~\n~S~S~\n.A.B.",
+  "minimum": 21
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 11",
+  "text": "#________\nT._A..___\n.G_...___\n___..T___\n~~~~.~~~~\n~B~S~S~G~\n~~S~~~~~~\n~~.~~~~~~",
+  "minimum": 13
+ },
+ {
+  "group": "Original levels",
+  "name": "Level 0",
+  "text": "_._____\n~T_____\nG~.____\n.~~._.G\n_.~~~T.\n__.S~~_\n__#~S~_\n_#...._\n#..____\nAB_____",
+  "minimum": 30
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Easy \u00b7 seed 0",
+  "text": ".._.___\n.._..__\n#...#..\n.G#.#__\n....#__\nG.B..#_\n.._._#.\n..A____\n.______",
+  "minimum": 6
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Easy \u00b7 seed 1",
+  "text": "___G.._\n__...._\n#....._\n.##..._\n_G.A...\n_#..B..\n___#.#.\n_____._\n_____#_\n____.._",
+  "minimum": 7
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Easy \u00b7 seed 2",
+  "text": "__.____\n__..___\n..._.__\n....#__\n...BA..\n_....._\n_#..#..\n_...GG.\n_#.___#",
+  "minimum": 6
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Medium \u00b7 seed 0",
+  "text": ".#...A.\n.GB#.._\n.......\n..#...#\n.#.._..\n.#.____\n_G.____\n_._____",
+  "minimum": 13
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Medium \u00b7 seed 1",
+  "text": "____..G\n__._..#\n__...#.\n._..#..\n.A....#\n#B.#...\n...#G.#",
+  "minimum": 16
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Medium \u00b7 seed 2",
+  "text": ".....B\n#.#.A.\n..G.#.\n......\n....._\n..#.__\n#G_.._\n#__.__",
+  "minimum": 13
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Hard \u00b7 seed 0",
+  "text": ".._G.#_\n#....__\n.G....B\n#....A_\n#....._\n.....#_\n.__..._",
+  "minimum": 25
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Hard \u00b7 seed 1",
+  "text": "__#..__\n__.._._\n__.....\n.......\n_#.....\n_#....G\n___.G..\n___#AB.\n______.",
+  "minimum": 29
+ },
+ {
+  "group": "Generated: 2 clones",
+  "name": "Hard \u00b7 seed 2",
+  "text": "#___.._\nB....G.\n..#A.._\n#..##._\n.#.##G_\n##...._\n...____\n##_____",
+  "minimum": 25
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Easy \u00b7 seed 0",
+  "text": ".._____\n....___\nB.A.___\n#.GG...\n#.#.G_.\n...C#..\n_.#.._#\n_..#.__",
+  "minimum": 6
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Easy \u00b7 seed 1",
+  "text": "_.#.G._\n_CG.#G_\n_.B..._\n#A####_\n..#..._\n__.....\n__...#.\n___._._",
+  "minimum": 12
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Easy \u00b7 seed 2",
+  "text": "__..G._\n_#...._\n_....G#\n##A....\nG#.#...\n...B.#_\n#..C___",
+  "minimum": 12
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Medium \u00b7 seed 0",
+  "text": ".....#.\n.C...G.\n..G..__\n..B..__\n...A#._\n_.#..G_\n_.__.._\n____#__",
+  "minimum": 20
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Medium \u00b7 seed 1",
+  "text": "_#__.__\n_.__...\n_B.G...\n_..#.#G\nA..C.#.\n#...#..\n#.G....",
+  "minimum": 16
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Medium \u00b7 seed 2",
+  "text": ".._____\n.._____\n.G#.___\n..#.A__\n#...B..\n.#G...C\n___...G\n___....\n___.#..",
+  "minimum": 19
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Hard \u00b7 seed 0",
+  "text": "G....B.\n.G..#..\n..#..A.\n_..#C..\n_...#.#\n_G...__\n_.#____",
+  "minimum": 26
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Hard \u00b7 seed 1",
+  "text": "___.___\n_AG.#._\n_#.B#..\n.._....\n.C###..\n.......\n.G...G.",
+  "minimum": 31
+ },
+ {
+  "group": "Generated: 3 clones",
+  "name": "Hard \u00b7 seed 2",
+  "text": "___G.\n__G..\n_B...\n_.G..\n.##..\n_.A..\n..C..\n#..#.\n_...#\n__...",
+  "minimum": 25
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Easy \u00b7 seed 0",
+  "text": "G..~~..\n.GBS~~.\n.A.~~..\n...~S~_\n....#._\n......_",
+  "minimum": 9
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Easy \u00b7 seed 1",
+  "text": "_____._\n___...G\n___..#.\n_....##\n_#B....\n.A.G..#\n._.~S~S\n___~~._\n____.._\n_____._",
+  "minimum": 11
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Easy \u00b7 seed 2",
+  "text": "____#.#\n..#G..B\n.#...A.\n_..#...\n...G...\n.....#_\n_~~~.._\n_~~____\n_~SS___",
+  "minimum": 8
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Medium \u00b7 seed 0",
+  "text": "____.__\n___B.##\n_.#G...\n..#.A.#\n_._#.G#\n__.~~..\n_#.~~~.\n__.S~S~",
+  "minimum": 13
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Medium \u00b7 seed 1",
+  "text": "..B~SS.\n...~~~~\n....#.#\n.A...#_\nG...#__\n..G..__\n___..__",
+  "minimum": 17
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Medium \u00b7 seed 2",
+  "text": "__....\n_G#.._\n......\n......\n....A.\n..S~__\n_.S~__\n_G~~B_\n_.~~~_\n_.____",
+  "minimum": 15
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Hard \u00b7 seed 0",
+  "text": "__...#_\n___..._\n__...__\n...#..G\n.~~~B#_\nG~~.A..\n.SS~.._\n_~~~.._",
+  "minimum": 29
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Hard \u00b7 seed 1",
+  "text": "_.___..\n.A.__#.\n_#~~~.#\nBG~~#..\n_.~SS..\n_.....G\n_......",
+  "minimum": 30
+ },
+ {
+  "group": "Generated: 2 clones, sliders",
+  "name": "Hard \u00b7 seed 2",
+  "text": "B....._\n...#..G\n.A.....\n.S~~S..\nG~~..._\n...____\n_#.____\n_._____",
+  "minimum": 30
+ }
+]
