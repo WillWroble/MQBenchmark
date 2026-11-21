@@ -5,3 +5,4 @@
 {"seed": 4, "text": "....G._\n#...GG.\n_...#.#\n#..~S~.\n..#~S..\nAC.~~~_\n_...#..\n__...B_\n......_\n_..._._", "minimum": 22, "solution": "UUURULLRURDLLLDURDUURR"}
 {"seed": 5, "text": "_...GC_\n_...~~_\n_G.#S~~\n.BA.~~~\n#...S~~\nG....._\n_....__\n_......\n_..#.._\n......#", "minimum": 14, "solution": "LDDRDDLURULLUU"}
 {"seed": 6, "text": "_..G.._\n_....._\n_.CG_._\n_....._\n_....._\n..BGA._\n_~~~S..\n.~~~~..\n_~~S~#_\n#......", "minimum": 13, "solution": "LDRDRDUUULURU"}
+{"seed": 7, "text": "....G._\nB...G._\n#A....#\n.....G_\n_...C._\n_....._\n_##S~._\n_..S~._\n_..~~..\n...~~~~", "minimum": 16, "solution": "RDLULRDLLRULURRR"}
