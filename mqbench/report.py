@@ -12,8 +12,9 @@ def summarize(records):
     groups = defaultdict(list)
     for r in records:
         kind = 'dev' if r['level'].startswith('dev-') else r['level'].rsplit('-', 1)[0]
-        groups[r['model'], r['mode'], kind].append(r)
-        groups[r['model'], r['mode'], 'all'].append(r)
+        model = r['model'] + (f" ({r['effort']} effort)" if r.get('effort', 'default') != 'default' else '')
+        groups[model, r['mode'], kind].append(r)
+        groups[model, r['mode'], 'all'].append(r)
     rows = []
     for (model, mode, kind), rs in sorted(groups.items()):
         solved = [r for r in rs if r['solved']]

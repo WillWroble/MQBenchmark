@@ -1,7 +1,7 @@
 """Runs models on Mirror Quest levels through OpenRouter, logging every call.
 
 Usage: python -m mqbench.harness MODEL [--mode one-shot|interactive] [--set scored|dev]
-       [--seed N] [--per-kind N] [--kinds 2-0 3-0 ...] [--workers N] [--out FILE]
+       [--seed N] [--per-kind N] [--kinds 2-0 3-0 ...] [--effort LEVEL] [--workers N] [--out FILE]
 
 Each level becomes one JSON line in the output file, with the full conversation, every
 call's tokens, time and cost, and the result. A rerun skips levels already in the file.
@@ -47,12 +47,13 @@ def last_match(pattern, text):
     return matches[-1] if matches else None
 
 
-def openrouter(model):
+def openrouter(model, effort=None):
     """A client that sends a conversation to a model and returns its reply and the call's log entry."""
     def complete(messages):
         # exclude: false asks for the reasoning text (a summary, for some providers) without changing its effort
         body = json.dumps({'model': model, 'messages': messages, 'usage': {'include': True},
-                           'max_tokens': MAX_TOKENS, 'reasoning': {'exclude': False}}).encode()
+                           'max_tokens': MAX_TOKENS,
+                           'reasoning': {'exclude': False, **({'effort': effort} if effort else {})}}).encode()
         request = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions', body, {
             'Content-Type': 'application/json', 'Authorization': f'Bearer {os.environ.get("OPENROUTER_API_KEY", "proxy")}'})
         for wait in [5, 15, 60, 120, None]:
@@ -158,20 +159,23 @@ def main():
     parser.add_argument('--per-kind', type=int, default=10)
     parser.add_argument('--kinds', nargs='*', help='kinds of level to run, as <clones>-<sliders 0/1>; all by default')
     parser.add_argument('--workers', type=int, default=8)
+    parser.add_argument('--effort', choices=['low', 'medium', 'high', 'xhigh', 'max'],
+                        help='reasoning effort; the provider default if omitted')
     parser.add_argument('--out')
     args = parser.parse_args()
     levels = dev_set() if args.set == 'dev' else scored_set(args.seed, args.per_kind, args.kinds)
-    name = f'{args.model.replace("/", "_")}-{args.mode}-{args.set}' + (f'-seed{args.seed}' if args.set == 'scored' else '')
+    name = (f'{args.model.replace("/", "_")}-{args.mode}-{args.set}' + (f'-seed{args.seed}' if args.set == 'scored' else '')
+            + (f'-effort-{args.effort}' if args.effort else ''))
     out = Path(args.out or ROOT.parent / 'results' / f'{name}.jsonl')
     out.parent.mkdir(parents=True, exist_ok=True)
     done = {json.loads(line)['level'] for line in out.read_text().splitlines()} if out.exists() else set()
     todo = {k: v for k, v in levels.items() if k not in done}
-    complete = openrouter(args.model)
+    complete = openrouter(args.model, args.effort)
 
     def work(item):
         level_id, (text, minimum) = item
         try:
-            record = run_level(complete, args.model, args.mode, level_id, text, minimum)
+            record = {**run_level(complete, args.model, args.mode, level_id, text, minimum), 'effort': args.effort or 'default'}
         except Exception as error:  # left out of the file, so a rerun tries the level again
             print(f'{level_id}: failed: {error}', flush=True)
             return
