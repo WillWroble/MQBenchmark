@@ -9,6 +9,10 @@ const ORIGINAL = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0];
 const SPEED = 3.5, ACCELERATION = 4;
 const STEP_MS = 1000 * Math.log(1 + ACCELERATION) / (SPEED * ACCELERATION);
 const ART = 20;  // the sprites are drawn on a 20-pixel grid, so cells are multiples of it
+// As in the game, sprites are 1.05 cells wide and overlap their neighbours, layered back to front:
+// smooth floor, then teleporters and drains, then floor, walls and goals, then sliders and clones.
+const SIZE = 1.05, OVERLAP = (SIZE - 1) / 2;
+const TILE_LAYERS = ['~', 'TtD', '.#G'];
 
 const storage = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
@@ -168,10 +172,13 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!game) return;
   const [rows, cols] = game.level.shape;
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const sprite = TILE_SPRITES[game.level.tile(`${r},${c}`)];
-      if (sprite) ctx.drawImage(images[sprite], c * cell, r * cell, cell, cell);
+  const put = (sprite, r, c) => ctx.drawImage(images[sprite], (c - OVERLAP) * cell, (r - OVERLAP) * cell, SIZE * cell, SIZE * cell);
+  for (const layer of TILE_LAYERS) {
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const tile = game.level.tile(`${r},${c}`);
+        if (layer.includes(tile)) put(TILE_SPRITES[tile], r, c);
+      }
     }
   }
   const seconds = anim ? (performance.now() - anim.start) / 1000 : Infinity;
@@ -179,7 +186,7 @@ function render() {
   const draw = (sprite, from, to) => {
     const [r0, c0] = from.split(',').map(Number), [r1, c1] = to.split(',').map(Number);
     const t = Math.abs(r1 - r0) + Math.abs(c1 - c0) > 1 ? 1 : k;  // teleports jump
-    ctx.drawImage(images[sprite], (c0 + (c1 - c0) * t) * cell, (r0 + (r1 - r0) * t) * cell, cell, cell);
+    put(sprite, r0 + (r1 - r0) * t, c0 + (c1 - c0) * t);
   };
   if (anim) {
     anim.sliders.forEach(([from, to]) => draw('slider', from, to));
