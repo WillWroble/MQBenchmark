@@ -1,7 +1,7 @@
 """Runs models on Mirror Quest levels through OpenRouter, logging every call.
 
 Usage: python -m mqbench.harness MODEL [--mode one-shot|interactive] [--set scored|dev]
-       [--seed N] [--per-kind N] [--workers N] [--out FILE]
+       [--seed N] [--per-kind N] [--kinds 2-0 3-0 ...] [--workers N] [--out FILE]
 
 Each level becomes one JSON line in the output file, with the full conversation, every
 call's tokens, time and cost, and the result. A rerun skips levels already in the file.
@@ -124,12 +124,18 @@ def run_level(complete, model, mode, level_id, text, minimum):
     }
 
 
-def scored_set(seed, per_kind):
-    """A seeded sample of per_kind levels from the stock for each kind of level: {id: (text, minimum)}."""
-    rng = random.Random(seed)
+def scored_set(seed, per_kind, kinds=None):
+    """A seeded sample of per_kind levels from the stock for each kind of level: {id: (text, minimum)}.
+
+    Each kind is sampled on its own, so one kind's stock growing doesn't change another's sample.
+    Kinds are '<clones>-<sliders 0/1>', all by default.
+    """
     levels = {}
     for path in sorted((LEVELS / 'stock').glob('*.jsonl')):
-        stock = [json.loads(line) for line in path.read_text().splitlines()]
+        if kinds and path.stem.split('-', 1)[1] not in kinds:
+            continue
+        stock = sorted((json.loads(line) for line in path.read_text().splitlines()), key=lambda lv: lv['seed'])
+        rng = random.Random(f'{seed}-{path.stem}')
         for level in sorted(rng.sample(stock, min(per_kind, len(stock))), key=lambda lv: lv['seed']):
             levels[f'{path.stem}-{level["seed"]}'] = level['text'], level['minimum']
     return levels
@@ -146,10 +152,11 @@ def main():
     parser.add_argument('--set', choices=['scored', 'dev'], default='scored')
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--per-kind', type=int, default=10)
+    parser.add_argument('--kinds', nargs='*', help='kinds of level to run, as <clones>-<sliders 0/1>; all by default')
     parser.add_argument('--workers', type=int, default=8)
     parser.add_argument('--out')
     args = parser.parse_args()
-    levels = dev_set() if args.set == 'dev' else scored_set(args.seed, args.per_kind)
+    levels = dev_set() if args.set == 'dev' else scored_set(args.seed, args.per_kind, args.kinds)
     name = f'{args.model.replace("/", "_")}-{args.mode}-{args.set}' + (f'-seed{args.seed}' if args.set == 'scored' else '')
     out = Path(args.out or ROOT.parent / 'results' / f'{name}.jsonl')
     out.parent.mkdir(parents=True, exist_ok=True)
