@@ -53,7 +53,8 @@ class Level {
       const ends = new Map();
       for (const p of [...clones, ...sliders]) ends.set(end(p), [...(ends.get(end(p)) ?? []), p]);
       const colliding = new Set([...ends.values()].filter(ps => ps.length > 1).flat());
-      if (!colliding.size) return { clones: clones.map(end), sliders: new Set([...sliders].map(end)) };
+      if (!colliding.size && !moves.size) return state;
+      if (!colliding.size) return { clones: clones.map(end), sliders: new Set([...sliders].map(end)), moves };
       const tags = [...colliding].map(p => moves.get(p)?.[1]).filter(Boolean);
       const hit = disabled.filter(i => !pushed.has(i) && colliding.has(clones[i]));
       if (tags.length) tags.forEach(t => banned.add(t));

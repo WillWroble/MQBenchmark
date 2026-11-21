@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mirror Quest</title>
+<link rel="icon" href="sprites/clone.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Inter:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="app">
+  <header>
+    <h1>Mirror Quest</h1>
+    <nav>
+      <a href="#play" id="tab-play">Play</a>
+      <a href="#leaderboard" id="tab-leaderboard">Leaderboard</a>
+    </nav>
+  </header>
+
+  <main id="play">
+    <div class="controls">
+      <div class="segmented" id="set" role="group" aria-label="Levels">
+        <button data-value="benchmark">Benchmark</button><button data-value="original">Original</button>
+      </div>
+      <div class="benchmark-only segmented" id="clones" role="group" aria-label="Clones">
+        <button data-value="2">2 clones</button><button data-value="3">3 clones</button>
+      </div>
+      <div class="benchmark-only segmented" id="sliders" role="group" aria-label="Sliders">
+        <button data-value="false">No sliders</button><button data-value="true">Sliders</button>
+      </div>
+      <div class="benchmark-only segmented" id="tier" role="group" aria-label="Difficulty">
+        <button data-value="easy">Easy</button><button data-value="medium">Medium</button><button data-value="hard">Hard</button>
+      </div>
+      <label class="original-only">Level <select id="original"></select></label>
+    </div>
+
+    <section class="stage">
+      <div class="bar">
+        <span class="count">Moves <b id="moves">0</b></span>
+        <span class="buttons"><button id="undo">Undo</button><button id="reset">Reset</button></span>
+      </div>
+      <div class="board"><canvas id="board"></canvas><p id="loading" hidden>Building a level…</p></div>
+      <div class="result" id="result" hidden>
+        <p id="result-text"></p>
+        <button id="next" class="primary">Next level</button>
+      </div>
+      <div class="pad" aria-label="Move">
+        <button data-move="U" aria-label="Up">▲</button><button data-move="L" aria-label="Left">◀</button>
+        <button data-move="D" aria-label="Down">▼</button><button data-move="R" aria-label="Right">▶</button>
+      </div>
+    </section>
+
+    <details class="rules" open>
+      <summary>How to play</summary>
+      <ul id="rules"></ul>
+      <p class="keys"><kbd>Arrows</kbd> or <kbd>WASD</kbd> or swipe to move · <kbd>Z</kbd> undo · <kbd>R</kbd> reset · <kbd>Enter</kbd> next level</p>
+    </details>
+    <p class="note">Games are recorded anonymously and published as the human baseline for MQBenchmark.</p>
+  </main>
+
+  <main id="leaderboard" hidden>
+    <section>
+      <h2>Humans</h2>
+      <p class="lede">Everyone's games on benchmark levels, by kind of level. Moves are counted only for solved games, as a multiple of the minimum.</p>
+      <div class="table" id="humans"></div>
+    </section>
+    <section>
+      <h2>Models</h2>
+      <p class="lede" id="models">No model results yet.</p>
+    </section>
+  </main>
+</div>
+<script src="engine.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

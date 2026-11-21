@@ -4,6 +4,7 @@ import pytest
 
 from mqbench.engine import Level
 from mqbench.generator import TIERS, generate
+from mqbench.session import Session
 from mqbench.solver import solve
 
 DEV = Path(__file__).parent.parent / 'levels' / 'dev'
@@ -66,3 +67,13 @@ def test_generated_minimum_is_exact(tier, clones, sliders):
         assert len(solve(Level(text))) == len(solution)
         lo, hi = TIERS[tier]
         assert lo <= len(solution) <= hi
+
+
+def test_session_counts_like_the_game():
+    session = Session(Level('AB.\n...'))
+    for action in ['R', 'R', 'D', 'undo', 'L', 'reset', 'D']:
+        session.act(action)
+    assert (session.moves, session.actions) == (1, 7)
+    session.act('undo')
+    session.act('undo')
+    assert session.moves == 0

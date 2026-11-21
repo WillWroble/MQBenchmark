@@ -1,0 +1,9 @@
+You control all the clones at once. Each move sends every clone one square in the same direction: up, down, left or right.
+A clone that walks into a wall stays where it is while the others move.
+The void surrounds the board. If a move would send anything into the void, nothing moves.
+If a move would put two things on the same square, nothing moves.
+Clones push sliders, and sliders push other sliders in a line. Sliders only move onto smooth floor, teleporters and drains. A slider that can't move blocks whatever is pushing it.
+A clone that stops on a drain is stuck until something pushes it off.
+Anything that enters a teleporter comes out of the other one, still moving the same way. Some teleporters are exit only.
+The level is solved when every clone is on a goal at the same time.
+Moves that change nothing aren't counted.
