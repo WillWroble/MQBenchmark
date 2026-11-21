@@ -44,8 +44,11 @@ async function newGame() {
   let data;
   try {
     data = await (settings.set === 'original' ? fetchJson(`/api/levels/dev-${settings.original}`) : nextBenchmark());
-  } catch {
-    if (request === pending) $('loading').textContent = 'Could not load a level. Check your connection and pick a level again.';
+  } catch (error) {
+    if (request === pending) {
+      $('loading').textContent = error.status === 404 ? 'No levels of this kind yet. Pick another kind.'
+        : 'Could not load a level. Check your connection and pick a level again.';
+    }
     return;
   }
   if (request !== pending) return;

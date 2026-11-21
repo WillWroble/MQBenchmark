@@ -4,7 +4,6 @@ import os
 import random
 import time
 import uuid
-from functools import lru_cache
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -14,14 +13,12 @@ from huggingface_hub import CommitScheduler, snapshot_download
 from pydantic import BaseModel
 
 from mqbench.engine import Level
-from mqbench.generator import TIERS, generate
+from mqbench.generator import TIERS
 from mqbench.session import Session
 from mqbench.solver import solve
 
 ROOT = Path(__file__).parent.parent
-DEV = {int(p.stem): p.read_text() for p in (ROOT / 'levels' / 'dev').glob('*.txt')}
 PLAYS_REPO = 'inkling616/mqbench-human-plays'
-SLIDERS = 2  # sliders in a level of the sliders tier
 ACTIONS = {'U', 'D', 'L', 'R', 'undo', 'reset'}
 
 DATA = ROOT / 'data'
@@ -36,23 +33,24 @@ if token:
                                 path_in_repo='plays', every=5, token=token)
 plays = [json.loads(line) for f in DATA.glob('*/plays/*.jsonl') for line in f.read_text().splitlines()]
 
+# Level ids are 'dev-<number>' for the original levels, and '<tier>-<clones>-<sliders 0/1>-<seed>'
+# for generated levels, which come from the stock made by scripts/grow_stock.py.
+LEVELS = {}  # level id -> (text, minimum)
+STOCK = {}  # kind of level -> ids
+for p in (ROOT / 'levels' / 'dev').glob('*.txt'):
+    LEVELS[f'dev-{int(p.stem)}'] = p.read_text(), len(solve(Level(p.read_text())))
+for p in (ROOT / 'levels' / 'stock').glob('*.jsonl'):
+    for level in map(json.loads, p.read_text().splitlines()):
+        LEVELS[f'{p.stem}-{level["seed"]}'] = level['text'], level['minimum']
+        STOCK.setdefault(p.stem, []).append(f'{p.stem}-{level["seed"]}')
+
 app = FastAPI()
 
 
-@lru_cache(maxsize=1024)
 def load(id_):
-    """Level ids are 'dev-<number>' or '<tier>-<clones>-<sliders 0/1>-<seed>'."""
-    try:
-        if id_.startswith('dev-'):
-            text = DEV[int(id_[4:])]
-            return text, len(solve(Level(text)))
-        tier, clones, sliders, seed = id_.split('-')
-        if tier not in TIERS or clones not in ('2', '3') or sliders not in ('0', '1'):
-            raise ValueError
-        text, solution = generate(int(seed), tier, int(clones), SLIDERS * int(sliders))
-        return text, len(solution)
-    except (KeyError, ValueError):
+    if id_ not in LEVELS:
         raise HTTPException(404, f'No level {id_}')
+    return LEVELS[id_]
 
 
 @app.get('/api/rules', response_class=PlainTextResponse)
@@ -62,8 +60,11 @@ def rules():
 
 @app.get('/api/levels/new')
 def new_level(tier: str, clones: int, sliders: bool):
-    id_ = f'{tier}-{clones}-{int(sliders)}-{random.randrange(2 ** 31)}'
-    return {'id': id_, 'text': load(id_)[0]}
+    ids = STOCK.get(f'{tier}-{clones}-{int(sliders)}')
+    if not ids:
+        raise HTTPException(404, 'No levels of this kind yet')
+    id_ = random.choice(ids)
+    return {'id': id_, 'text': LEVELS[id_][0]}
 
 
 @app.get('/api/levels/{id_}')
