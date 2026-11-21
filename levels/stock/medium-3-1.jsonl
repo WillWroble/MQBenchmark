@@ -1,0 +1,4 @@
+{"seed": 1, "text": "_..G#._\n_..#.._\n_..._._\n__.C...\n......_\n_B..~S_\n....~~G\n_A..S~_\n_...~~~\n_....G.", "minimum": 23, "solution": "RRUULUUURDDDDLDRRURDDDR"}
+{"seed": 0, "text": "_...G..\n_.#..._\n_..~S~~\n_..~~..\n_..~~S~\n_..G.._\n_.....#\n.#...G_\n_A#..#_\n_.BC.._", "minimum": 21, "solution": "URUDRRUUULUUUUULDDDRR"}
+{"seed": 3, "text": "......_\n#.G.._.\n_....A_\n_B.G.._\n_C..G._\n_...#..\n_..~S.#\n_..~~.#\n_..~S~.\n_..~~..", "minimum": 20, "solution": "DDDDRLUUURRDRULULUUR"}
+{"seed": 2, "text": "_.#._._\n......_\n_.#....\n...#G._\n_A.G.._\n..~~~._\n_#~S~~.\n_C~~.._\n_BS~~G.\n_.....#", "minimum": 15, "solution": "RUUDDDRRRLUUURU"}
