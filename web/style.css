@@ -43,6 +43,7 @@ button.primary { background: var(--blue); border-color: var(--blue); color: var(
 .bar { width: 100%; max-width: var(--board-width, 420px); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .count { font: 400 15px var(--pixel); color: var(--muted); font-variant-numeric: tabular-nums; }
 .count b { color: var(--ink); font-weight: 700; }
+.level-id { margin-left: 10px; font: 12px var(--body); color: var(--muted); user-select: all; }
 .buttons { display: flex; gap: 6px; }
 .board { position: relative; display: grid; place-items: center; min-height: 120px; touch-action: none; }
 #board { display: block; image-rendering: pixelated; }

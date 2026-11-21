@@ -20,6 +20,7 @@ storage.set('player', player);
 
 const images = {};
 let game = null, anim = null, prefetched = null, pending = null, cell = 2 * ART;
+let linked = new URLSearchParams(location.search).get('level');  // ?level=<id> opens that level first
 
 // Levels
 
@@ -43,7 +44,9 @@ async function newGame() {
   const request = pending = {};
   let data;
   try {
-    data = await (settings.set === 'original' ? fetchJson(`/api/levels/dev-${settings.original}`) : nextBenchmark());
+    const id = linked ?? (settings.set === 'original' ? `dev-${settings.original}` : null);
+    linked = null;
+    data = await (id ? fetchJson(`/api/levels/${encodeURIComponent(id)}`) : nextBenchmark());
   } catch (error) {
     if (request === pending) {
       $('loading').textContent = error.status === 404 ? 'No levels of this kind yet. Pick another kind.'
@@ -156,6 +159,7 @@ function frame() {
 
 function render() {
   $('moves').textContent = game ? game.history.length - 1 : 0;
+  $('level-id').textContent = game?.id ?? '';
   $('undo').disabled = !game || solved();
   $('reset').disabled = !game;
   const canvas = $('board'), ctx = canvas.getContext('2d');
