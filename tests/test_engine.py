@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from mqbench.engine import Level
+from mqbench.generator import generate
 from mqbench.solver import solve
 
 DEV = Path(__file__).parent.parent / 'levels' / 'dev'
@@ -55,3 +56,10 @@ def test_dev_solutions_replay(path):
     for move in solve(level):
         state = level.step(state, move)
     assert level.solved(state)
+
+
+@pytest.mark.parametrize('clones, sliders', [(2, 0), (3, 0), (2, 2)])
+def test_generated_minimum_is_exact(clones, sliders):
+    for seed in range(5):
+        text, solution = generate(seed, clones, sliders)
+        assert len(solve(Level(text))) == len(solution)
