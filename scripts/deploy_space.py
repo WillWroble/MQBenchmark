@@ -6,7 +6,7 @@ from huggingface_hub import CommitOperationAdd, CommitOperationDelete, HfApi
 ROOT = Path(__file__).parent.parent
 SPACE = 'inkling616/mirror-quest'
 PLAYS = 'inkling616/mqbench-human-plays'
-DIRS = ['space', 'mqbench', 'web', 'levels/dev']
+DIRS = ['space', 'mqbench', 'web', 'levels']
 
 api = HfApi()
 api.create_repo(PLAYS, repo_type='dataset', exist_ok=True)
