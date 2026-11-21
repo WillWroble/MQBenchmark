@@ -4,11 +4,12 @@ Each kind of level has its own file, <tier>-<clones>-<sliders 0/1>.jsonl, with o
 line. New levels continue from the highest seed already in the file, and each is saved as
 soon as it is made, so an interrupted run loses nothing.
 
-Usage: python -m scripts.grow_stock COUNT [KIND ...], where a kind is <clones>-<sliders 0/1>
-(all four by default) and COUNT is how many levels to add for each tier of each kind.
+Usage: python -m scripts.grow_stock COUNT [KIND ...] [--workers N], where a kind is
+<clones>-<sliders 0/1> (all four by default) and COUNT is how many levels to add for each tier
+of each kind. Fewer workers use less memory, which 3 clones with sliders can need.
 """
+import argparse
 import json
-import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
@@ -23,9 +24,9 @@ def make(tier, clones, sliders, seed):
     return {'seed': seed, 'text': text, 'minimum': len(solution), 'solution': solution}
 
 
-def main(count, kinds=KINDS):
+def main(count, kinds=KINDS, workers=None):
     STOCK.mkdir(parents=True, exist_ok=True)
-    with ProcessPoolExecutor() as pool:
+    with ProcessPoolExecutor(workers) as pool:
         jobs = {}
         for kind in kinds:
             clones, sliders = map(int, kind.split('-'))
@@ -42,4 +43,9 @@ def main(count, kinds=KINDS):
 
 
 if __name__ == '__main__':
-    main(int(sys.argv[1]), sys.argv[2:] or KINDS)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('count', type=int)
+    parser.add_argument('kinds', nargs='*', default=KINDS)
+    parser.add_argument('--workers', type=int)
+    args = parser.parse_args()
+    main(args.count, args.kinds, args.workers)
