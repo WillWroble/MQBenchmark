@@ -79,6 +79,7 @@ class Action(BaseModel):
 class Play(BaseModel):
     level: str
     player: str
+    attempt: int = 1  # retries of a solved level count up from 1
     actions: list[Action]
 
 
@@ -103,10 +104,13 @@ def record(play: Play):
 
 @app.get('/api/leaderboard')
 def leaderboard():
-    """Human baseline for each kind of benchmark level: solve rate, and moves over the minimum when solved."""
+    """Human baseline for each kind of benchmark level: solve rate, and moves over the minimum when solved.
+
+    Only first attempts count, since a retry comes after seeing the minimum.
+    """
     groups = {}
     for p in plays:
-        if not p['level'].startswith('dev-'):
+        if not p['level'].startswith('dev-') and p.get('attempt', 1) == 1:
             tier, clones, sliders, _ = p['level'].split('-')
             groups.setdefault((tier, clones, sliders), []).append(p)
     humans = []

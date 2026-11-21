@@ -20,6 +20,7 @@ Each row is one attempt at one level, recorded when the level was solved or left
 |---|---|
 | `level` | `dev-<n>` for an original level, or `<tier>-<clones>-<sliders 0/1>-<seed>` for a generated benchmark level |
 | `player` | Random id kept in the player's browser |
+| `attempt` | 1 for a first attempt; a player who resets after solving retries the level as attempt 2, 3 and so on. The leaderboard counts first attempts only |
 | `actions` | Every action in order: `a` is `U`, `D`, `L`, `R`, `undo` or `reset`, and `t` is milliseconds since the level appeared |
 | `solved` | Whether every clone ended on a goal |
 | `moves` | Moves on the final count, as the game counts them: undone moves come off, and a reset starts over |

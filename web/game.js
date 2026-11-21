@@ -4,7 +4,10 @@ const SPRITES = [...Object.values(TILE_SPRITES), 'slider', 'clone', 'clone-disab
 const KEYS = { arrowup: 'U', arrowdown: 'D', arrowleft: 'L', arrowright: 'R', w: 'U', s: 'D', a: 'L', d: 'R',
                z: 'undo', b: 'undo', backspace: 'undo', r: 'reset' };
 const ORIGINAL = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0];
-const STEP_MS = 120;
+// Movement matches the game's CloneManager2: speed 3.5 squares/s, growing by a factor of
+// (1 + 4 × distance covered), so a step accelerates and takes about 115 ms.
+const SPEED = 3.5, ACCELERATION = 4;
+const STEP_MS = 1000 * Math.log(1 + ACCELERATION) / (SPEED * ACCELERATION);
 const ART = 20;  // the sprites are drawn on a 20-pixel grid, so cells are multiples of it
 
 const storage = {
@@ -47,8 +50,7 @@ async function newGame() {
   }
   if (request !== pending) return;
   $('loading').hidden = true;
-  const level = new Level(data.text);
-  game = { id: data.id, level, history: [level.start], actions: [], started: performance.now(), sent: false };
+  game = attempt(data.id, new Level(data.text), 1);
   resize();
   render();
 }
@@ -57,25 +59,45 @@ async function newGame() {
 
 const state = () => game.history.at(-1);
 const solved = () => game && game.level.solved(state());
+const attempt = (id, level, number) =>
+  ({ id, level, number, history: [level.start], actions: [], started: performance.now(), sent: false });
 
 function act(action) {
-  if (!game || solved()) return;
+  if (!game) return;
+  if (solved()) {
+    // After a solve, reset starts a new attempt at the same level.
+    if (action === 'reset') {
+      game = attempt(game.id, game.level, game.number + 1);
+      $('result').hidden = true;
+      render();
+    }
+    return;
+  }
   anim = null;
   game.actions.push({ a: action, t: Math.round(performance.now() - game.started) });
   if (action === 'undo') {
-    if (game.history.length > 1) game.history.pop();
+    if (game.history.length > 1) {
+      // Undo plays the move backwards, as in the game.
+      const before = game.history.pop();
+      const back = new Map([...before.moves].map(([from, [to]]) => [to, from]));
+      animate(before, [...before.sliders].map(p => [p, back.get(p) ?? p]));
+    }
   } else if (action === 'reset') {
     game.history = [game.level.start];
   } else {
     const before = state(), after = game.level.step(before, action);
     if (after !== before) {
       game.history.push(after);
-      anim = { before, after, start: performance.now() };
-      requestAnimationFrame(frame);
+      animate(before, [...before.sliders].map(p => [p, after.moves.get(p)?.[0] ?? p]));
     }
   }
   render();
   if (solved()) finish();
+}
+
+function animate(before, sliders) {
+  anim = { before, sliders, start: performance.now() };
+  requestAnimationFrame(frame);
 }
 
 function finish() {
@@ -94,7 +116,7 @@ function record() {
   game.sent = true;
   return fetch('/api/plays', {
     method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ level: game.id, player, actions: game.actions }),
+    body: JSON.stringify({ level: game.id, player, attempt: game.number, actions: game.actions }),
   });
 }
 
@@ -131,7 +153,8 @@ function frame() {
 
 function render() {
   $('moves').textContent = game ? game.history.length - 1 : 0;
-  $('undo').disabled = $('reset').disabled = !game || solved();
+  $('undo').disabled = !game || solved();
+  $('reset').disabled = !game;
   const canvas = $('board'), ctx = canvas.getContext('2d');
   ctx.setTransform(canvas.width / (canvas.clientWidth || 1), 0, 0, canvas.width / (canvas.clientWidth || 1), 0, 0);
   ctx.imageSmoothingEnabled = false;
@@ -144,14 +167,15 @@ function render() {
       if (sprite) ctx.drawImage(images[sprite], c * cell, r * cell, cell, cell);
     }
   }
-  const k = anim ? 1 - (1 - Math.min(1, (performance.now() - anim.start) / STEP_MS)) ** 2 : 1;
+  const seconds = anim ? (performance.now() - anim.start) / 1000 : Infinity;
+  const k = Math.min(1, (Math.exp(SPEED * ACCELERATION * seconds) - 1) / ACCELERATION);
   const draw = (sprite, from, to) => {
     const [r0, c0] = from.split(',').map(Number), [r1, c1] = to.split(',').map(Number);
     const t = Math.abs(r1 - r0) + Math.abs(c1 - c0) > 1 ? 1 : k;  // teleports jump
     ctx.drawImage(images[sprite], (c0 + (c1 - c0) * t) * cell, (r0 + (r1 - r0) * t) * cell, cell, cell);
   };
   if (anim) {
-    anim.before.sliders.forEach(p => draw('slider', p, anim.after.moves.get(p)?.[0] ?? p));
+    anim.sliders.forEach(([from, to]) => draw('slider', from, to));
   } else {
     state().sliders.forEach(p => draw('slider', p, p));
   }
