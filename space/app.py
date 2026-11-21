@@ -14,6 +14,7 @@ from pydantic import BaseModel
 
 from mqbench.engine import Level
 from mqbench.generator import TIERS
+from mqbench.harness import BUDGET
 from mqbench.session import Session
 from mqbench.solver import solve
 
@@ -106,7 +107,7 @@ def record(play: Play):
 
 @app.get('/api/leaderboard')
 def leaderboard():
-    """Human baseline for each kind of benchmark level: solve rate, and moves over the minimum when solved.
+    """Human baseline for each kind of benchmark level: solve rate within the move budget, and moves over the minimum when solved.
 
     Only first attempts count, since a retry comes after seeing the minimum.
     """
@@ -117,7 +118,7 @@ def leaderboard():
             groups.setdefault((tier, clones, sliders), []).append(p)
     humans = []
     for (tier, clones, sliders), ps in sorted(groups.items(), key=lambda g: (g[0][1], g[0][2], list(TIERS).index(g[0][0]))):
-        solved = [p for p in ps if p['solved']]
+        solved = [p for p in ps if p['solved'] and p['moves'] <= BUDGET * p['minimum']]  # the models' rule
         humans.append({'tier': tier, 'clones': int(clones), 'sliders': sliders == '1', 'games': len(ps),
                        'solve_rate': len(solved) / len(ps),
                        'moves_over_minimum': sum(p['moves'] / p['minimum'] for p in solved) / len(solved) if solved else None})
