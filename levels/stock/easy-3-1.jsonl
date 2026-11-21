@@ -4,3 +4,4 @@
 {"seed": 2, "text": "_.##...\n_....._\n_.....C\n_G.G.._\n_....._\n_...B._\n..~~~~_\n_G~~S._\n#.~S~~_\n#.A.#._", "minimum": 9, "solution": "LULLUUUDD"}
 {"seed": 5, "text": "_..#.G_\n~~SS.._\n~~~~...\n.....B.\n......#\n_...G..\n_..#C._\n..GA.._\n_....._\n.#...._", "minimum": 12, "solution": "RDDULUUDLULR"}
 {"seed": 6, "text": ".......\n__...._\n_~~~S._\n_~~..C_\n.~~~S.#\n_...#._\n_..GGA.\n....B._\n__..#G_\n......_", "minimum": 11, "solution": "LUULDRDRDDU"}
+{"seed": 1, "text": "_~~~...\n_~~~~._\n.~S~.._\nA~S~C.G\n...G.G#\n.......\n...B.._\n_...#__\n_....#_\n_#..#_.", "minimum": 12, "solution": "RDURDLDDURUR"}
