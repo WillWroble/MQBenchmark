@@ -49,7 +49,9 @@ def last_match(pattern, text):
 def openrouter(model):
     """A client that sends a conversation to a model and returns its reply and the call's log entry."""
     def complete(messages):
-        body = json.dumps({'model': model, 'messages': messages, 'usage': {'include': True}}).encode()
+        # exclude: false asks for the reasoning text (a summary, for some providers) without changing its effort
+        body = json.dumps({'model': model, 'messages': messages, 'usage': {'include': True},
+                           'reasoning': {'exclude': False}}).encode()
         request = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions', body, {
             'Content-Type': 'application/json', 'Authorization': f'Bearer {os.environ.get("OPENROUTER_API_KEY", "proxy")}'})
         for wait in [5, 15, 60, 120, None]:
@@ -74,6 +76,7 @@ def openrouter(model):
             'cost': usage.get('cost'),
             'provider': data.get('provider'),
             'reasoning': message.get('reasoning'),
+            'reasoning_details': message.get('reasoning_details'),
             'finish_reason': data['choices'][0].get('finish_reason'),
         }
     return complete
