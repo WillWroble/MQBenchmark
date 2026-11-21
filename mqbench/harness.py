@@ -61,13 +61,16 @@ def openrouter(model, effort=None):
             try:
                 with urllib.request.urlopen(request, timeout=1800) as response:
                     data = json.load(response)
-                break
-            except (urllib.error.URLError, TimeoutError, ConnectionError) as error:  # long calls can be dropped
-                if wait is None or getattr(error, 'code', 500) not in (408, 429, 500, 502, 503, 504):
+                if 'choices' in data and data['choices'][0].get('finish_reason') != 'error':
+                    break
+                error = RuntimeError(data.get('error') or 'the provider stopped with an error')
+            except (urllib.error.URLError, TimeoutError, ConnectionError) as e:  # long calls can be dropped
+                if getattr(e, 'code', 500) not in (408, 429, 500, 502, 503, 504):
                     raise
-                time.sleep(wait)
-        if 'choices' not in data:
-            raise RuntimeError(data.get('error', data))
+                error = e
+            if wait is None:
+                raise error
+            time.sleep(wait)
         message = data['choices'][0]['message']
         usage = data.get('usage', {})
         return message.get('content') or '', {
