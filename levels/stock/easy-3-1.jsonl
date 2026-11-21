@@ -22,3 +22,4 @@
 {"seed": 24, "text": ".B.G.._\n_....._\n......#\n.#....#\n....G._\n_C.AG..\n_.~~~~_\n_.SS~~.\n..~~~__\n_..._._", "minimum": 11, "solution": "DRRDLDLUUUR"}
 {"seed": 23, "text": "_.G....\n#....._\n.G.B...\n...~~S_\n_.C~~~~\n_..~~~#\n#..S~~~\n_#...._\n._..#._\n_GA....", "minimum": 7, "solution": "RRUULLL"}
 {"seed": 26, "text": "....._\n..CA._\n..G.#_\n_.B.._\n.G.S~~\n...~~_\n...S~~\n..G.#_\n.#....\n......", "minimum": 12, "solution": "DDDDDLURUUDL"}
+{"seed": 25, "text": "_..G.._\n_...#._\n_#...._\n...#...\n_G.....\n__#BS~~\n....~~~\n.#..S~~\n_C.G~~~\n_...A#_", "minimum": 11, "solution": "RUUURUULDDL"}
