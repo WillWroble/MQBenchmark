@@ -118,6 +118,7 @@ def run_level(complete, model, mode, level_id, text, minimum):
         'solved': session.solved and session.moves <= BUDGET * minimum,
         'reached_goal': session.solved, 'moves': session.moves, 'total_actions': session.actions,
         'submitted': moves, 'calls': len(calls),
+        'truncated': any(c['finish_reason'] == 'length' for c in calls),  # ran out of output tokens
         **{key: total(key) for key in ['input_tokens', 'output_tokens', 'reasoning_tokens', 'cost', 'seconds']},
         'messages': messages, 'call_log': calls,
     }

@@ -21,6 +21,7 @@ def summarize(records):
         rows.append({
             'model': model, 'mode': mode, 'kind': kind, 'levels': len(rs),
             'solve_rate': len(solved) / len(rs),
+            'truncated': sum(r.get('truncated', False) for r in rs) / len(rs),
             'moves_over_minimum': sum(r['moves'] / r['minimum'] for r in solved) / len(solved) if solved else None,
             'output_tokens': mean('output_tokens'), 'reasoning_tokens': mean('reasoning_tokens'),
             'output_tokens_per_solve': sum(r['output_tokens'] or 0 for r in rs) / len(solved) if solved else None,
@@ -31,7 +32,7 @@ def summarize(records):
 
 def main():
     records = [json.loads(line) for path in sys.argv[1:] for line in open(path)]
-    columns = ['model', 'mode', 'kind', 'levels', 'solve_rate', 'moves_over_minimum', 'output_tokens',
+    columns = ['model', 'mode', 'kind', 'levels', 'solve_rate', 'truncated', 'moves_over_minimum', 'output_tokens',
                'reasoning_tokens', 'output_tokens_per_solve', 'seconds', 'cost']
     fmt = lambda v: '-' if v is None else f'{v:.3g}' if isinstance(v, float) else str(v)
     table = [columns] + [[fmt(row[c]) for c in columns] for row in summarize(records)]

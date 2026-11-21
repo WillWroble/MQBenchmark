@@ -8,7 +8,7 @@ LEVEL = 'G....\nG....\n..#..\n.....\n..AB.'  # original level 1, minimum 8
 def scripted(*replies):
     """A fake model that gives these replies in turn."""
     replies = iter(replies)
-    return lambda messages: (next(replies), {key: 1 for key in ['input_tokens', 'output_tokens', 'reasoning_tokens', 'cost', 'seconds']})
+    return lambda messages: (next(replies), {**{key: 1 for key in ['input_tokens', 'output_tokens', 'reasoning_tokens', 'cost', 'seconds']}, 'finish_reason': 'stop'})
 
 
 def test_one_shot_solution_is_scored():
