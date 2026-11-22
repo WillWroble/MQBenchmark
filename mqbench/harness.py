@@ -64,7 +64,7 @@ def openrouter(model, effort=None):
                 if 'choices' in data and data['choices'][0].get('finish_reason') != 'error':
                     break
                 error = RuntimeError(data.get('error') or 'the provider stopped with an error')
-            except (urllib.error.URLError, TimeoutError, ConnectionError) as e:  # long calls can be dropped
+            except (urllib.error.URLError, TimeoutError, ConnectionError, json.JSONDecodeError) as e:  # long calls can be dropped
                 if getattr(e, 'code', 500) not in (408, 429, 500, 502, 503, 504):
                     raise
                 error = e
