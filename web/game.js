@@ -124,11 +124,27 @@ function finish() {
 function record() {
   if (!game || game.sent || !game.actions.length) return null;
   game.sent = true;
-  return fetch('/api/plays', {
-    method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ level: game.id, player, attempt: game.number, actions: game.actions }),
-  });
+  return send(JSON.stringify({ id: crypto.randomUUID(), level: game.id, player, attempt: game.number, actions: game.actions }));
 }
+
+// Each game is kept in the browser until the server confirms it, so one that fails to send, even as
+// the page closes, is sent again on the next visit; its id stops the server counting it twice.
+// Browsers refuse keepalive requests over 64 KB, which long games exceed.
+function send(body) {
+  const unsent = (without = body) => (storage.get('unsent') ?? []).filter(b => b !== without);
+  storage.set('unsent', [...unsent(), body]);
+  const request = fetch('/api/plays', {
+    method: 'POST', keepalive: body.length < 60000, headers: { 'Content-Type': 'application/json' }, body,
+  }).then(r => {
+    if (r.status >= 500) throw r;
+    storage.set('unsent', unsent());
+    return r;
+  });
+  request.catch(() => {});
+  return request;
+}
+
+const resend = () => (storage.get('unsent') ?? []).forEach(send);
 
 function next() {
   if (settings.set === 'original') {
@@ -320,6 +336,7 @@ function route() {
 addEventListener('hashchange', route);
 
 async function start() {
+  resend();
   drawStars();
   showSettings();
   route();

@@ -18,6 +18,7 @@ Each row is one attempt at one level, recorded when the level was solved or left
 
 | Field | Meaning |
 |---|---|
+| `id` | Random id the browser gives each game, so a game sent twice is stored once |
 | `level` | `dev-<n>` for an original level, or `<tier>-<clones>-<sliders 0/1>-<seed>` for a generated benchmark level |
 | `player` | Random id kept in the player's browser |
 | `attempt` | 1 for a first attempt; a player who resets after solving retries the level as attempt 2, 3 and so on. The leaderboard counts first attempts only |

@@ -1,4 +1,5 @@
 """The Mirror Quest Space: serves the game, records human games and computes the leaderboard."""
+import atexit
 import json
 import os
 import random
@@ -33,6 +34,7 @@ if token:
     snapshot_download(PLAYS_REPO, repo_type='dataset', local_dir=DATA / 'saved', token=token)
     scheduler = CommitScheduler(repo_id=PLAYS_REPO, repo_type='dataset', folder_path=OUTBOX,
                                 path_in_repo='plays', every=5, token=token)
+    atexit.register(lambda: scheduler.trigger().result())  # upload what's left when the Space restarts
 plays = [json.loads(line) for f in DATA.glob('*/plays/*.jsonl') for line in f.read_text().splitlines()]
 
 # Level ids are 'dev-<number>' for the original levels, and '<tier>-<clones>-<sliders 0/1>-<seed>'
@@ -80,6 +82,7 @@ class Action(BaseModel):
 
 
 class Play(BaseModel):
+    id: str | None = None  # set by the browser, so a game it sends again isn't stored twice
     level: str
     player: str
     attempt: int = 1  # retries of a solved level count up from 1
@@ -96,6 +99,8 @@ def record(play: Play):
     for x in play.actions:
         session.act(x.a)
     result = {'solved': session.solved, 'moves': session.moves, 'minimum': minimum}
+    if play.id and any(p.get('id') == play.id for p in plays):
+        return result
     row = {**play.model_dump(), **result, 'total_actions': session.actions,
            'time_ms': play.actions[-1].t, 'recorded_at': int(time.time())}
     plays.append(row)
