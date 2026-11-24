@@ -1,7 +1,7 @@
 // Port of mqbench/engine.py. Keep the two in step: tests/test_web.py replays random moves through both.
 
-const [VOID, FLOOR, WALL, GOAL, SMOOTH, TELEPORTER, EXIT, DRAIN, SLIDER] = '_.#G~TtDS';
-const CLONES = 'ABC';
+const [VOID, FLOOR, WALL, GOAL, SMOOTH, TELEPORTER, EXIT, DRAIN, SLIDER] = '_.#G~TtOS';
+const CLONES = 'ABCD';
 const SLIDES = new Set([VOID, SMOOTH, TELEPORTER, EXIT, DRAIN]);
 const DIRECTIONS = { U: [-1, 0], D: [1, 0], L: [0, -1], R: [0, 1] };
 const BLOCKED = 'blocked', FALLS = 'falls';

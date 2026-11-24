@@ -16,7 +16,7 @@ from pathlib import Path
 from mqbench.generator import SLIDERS, TIERS, generate
 
 STOCK = Path(__file__).parent.parent / 'levels' / 'stock'
-KINDS = ['2-0', '3-0', '2-1', '3-1']
+KINDS = ['2-0', '3-0', '2-1', '3-1', '4-0']
 
 
 def make(tier, clones, sliders, seed):

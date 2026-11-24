@@ -34,9 +34,9 @@ def play(board, moves):
     # Pushing a slider into the void cancels the move.
     ('AS_\n.B.', 'R', 'AS_\n.B.'),
     # A clone on a drain can't move...
-    ('AD.\nB#.', 'RR', '.A.\nB#.'),
+    ('AO.\nB#.', 'RR', '.A.\nB#.'),
     # ...but is pushed by another clone.
-    ('ABD..', 'RR', '..AB.'),
+    ('ABO..', 'RR', '..AB.'),
     # Entering a teleporter comes out of its partner.
     ('AT..T.\n.B....', 'R', '.T..A.\n..B...'),
     # If coming out would collide, the clone stops on the entry teleporter instead.

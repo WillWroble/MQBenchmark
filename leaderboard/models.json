@@ -753,16 +753,16 @@
   "model": "openai/gpt-6.2-astra (high effort)",
   "mode": "one-shot",
   "kind": "all",
-  "levels": 90,
-  "solve_rate": 0.9666666666666667,
+  "levels": 120,
+  "solve_rate": 0.9333333333333333,
   "truncated": 0.0,
-  "wrong": 0.03333333333333333,
-  "moves_over_minimum": 1.1944238970630703,
-  "output_tokens": 2859.2,
-  "reasoning_tokens": 2806.4555555555557,
-  "output_tokens_per_solve": 2957.793103448276,
-  "seconds": 69.49199999999999,
-  "cost": 0.11770728888888889
+  "wrong": 0.06666666666666667,
+  "moves_over_minimum": 1.2295125743033295,
+  "output_tokens": 3676.983333333333,
+  "reasoning_tokens": 3630.608333333333,
+  "output_tokens_per_solve": 3939.625,
+  "seconds": 92.5435,
+  "cost": 0.1504262
  },
  {
   "model": "openai/gpt-6.2-astra (high effort)",
@@ -812,6 +812,21 @@
  {
   "model": "openai/gpt-6.2-astra (high effort)",
   "mode": "one-shot",
+  "kind": "easy-3-1",
+  "levels": 10,
+  "solve_rate": 0.8,
+  "truncated": 0.0,
+  "wrong": 0.2,
+  "moves_over_minimum": 1.3576388888888888,
+  "output_tokens": 2596.1,
+  "reasoning_tokens": 2565.4,
+  "output_tokens_per_solve": 3245.125,
+  "seconds": 68.298,
+  "cost": 0.10720160000000001
+ },
+ {
+  "model": "openai/gpt-6.2-astra (high effort)",
+  "mode": "one-shot",
   "kind": "hard-2-0",
   "levels": 10,
   "solve_rate": 1.0,
@@ -857,6 +872,21 @@
  {
   "model": "openai/gpt-6.2-astra (high effort)",
   "mode": "one-shot",
+  "kind": "hard-3-1",
+  "levels": 10,
+  "solve_rate": 1.0,
+  "truncated": 0.0,
+  "wrong": 0.0,
+  "moves_over_minimum": 1.365946275946276,
+  "output_tokens": 8464.5,
+  "reasoning_tokens": 8437.5,
+  "output_tokens_per_solve": 8464.5,
+  "seconds": 226.81900000000002,
+  "cost": 0.34196560000000004
+ },
+ {
+  "model": "openai/gpt-6.2-astra (high effort)",
+  "mode": "one-shot",
   "kind": "medium-2-0",
   "levels": 10,
   "solve_rate": 1.0,
@@ -898,5 +928,20 @@
   "output_tokens_per_solve": 4929.444444444444,
   "seconds": 117.06300000000002,
   "cost": 0.1808016
+ },
+ {
+  "model": "openai/gpt-6.2-astra (high effort)",
+  "mode": "one-shot",
+  "kind": "medium-3-1",
+  "levels": 10,
+  "solve_rate": 0.7,
+  "truncated": 0.0,
+  "wrong": 0.3,
+  "moves_over_minimum": 1.3242793438445613,
+  "output_tokens": 7330.4,
+  "reasoning_tokens": 7306.3,
+  "output_tokens_per_solve": 10472.0,
+  "seconds": 189.977,
+  "cost": 0.2965816
  }
 ]

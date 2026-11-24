@@ -1,5 +1,5 @@
 The board is a grid of characters, one row per line:
-A, B, C  clones
+A, B, C, D  clones
 .  floor
 #  wall
 _  void
@@ -8,5 +8,5 @@ G  goal
 S  slider, on smooth floor
 T  teleporter
 t  exit-only teleporter
-D  drain
+O  drain
 A clone or slider hides the square under it; any square under one that isn't plain floor or smooth floor is listed below the board. Rows are numbered from 1 at the top and columns from 1 at the left.

@@ -8,8 +8,8 @@ entering a teleporter comes out of its partner. The level is solved when every c
 a goal.
 """
 
-VOID, FLOOR, WALL, GOAL, SMOOTH, TELEPORTER, EXIT, DRAIN, SLIDER = '_.#G~TtDS'
-CLONES = 'ABC'
+VOID, FLOOR, WALL, GOAL, SMOOTH, TELEPORTER, EXIT, DRAIN, SLIDER = '_.#G~TtOS'
+CLONES = 'ABCD'
 SLIDES = {VOID, SMOOTH, TELEPORTER, EXIT, DRAIN}
 DIRECTIONS = {'U': (-1, 0), 'D': (1, 0), 'L': (0, -1), 'R': (0, 1)}
 BLOCKED, FALLS = 'blocked', 'falls'

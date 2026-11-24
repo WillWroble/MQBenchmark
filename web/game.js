@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-const TILE_SPRITES = { '.': 'floor', '#': 'wall', 'G': 'goal', 'T': 'teleporter', 't': 'exit', '~': 'smooth', 'D': 'drain' };
+const TILE_SPRITES = { '.': 'floor', '#': 'wall', 'G': 'goal', 'T': 'teleporter', 't': 'exit', '~': 'smooth', 'O': 'drain' };
 const SPRITES = [...Object.values(TILE_SPRITES), 'slider', 'clone', 'clone-disabled'];
 const KEYS = { arrowup: 'U', arrowdown: 'D', arrowleft: 'L', arrowright: 'R', w: 'U', s: 'D', a: 'L', d: 'R',
                z: 'undo', b: 'undo', backspace: 'undo', r: 'reset' };
@@ -12,7 +12,7 @@ const ART = 20;  // the sprites are drawn on a 20-pixel grid, so cells are multi
 // As in the game, sprites are 1.05 cells wide and overlap their neighbours, layered back to front:
 // smooth floor, then teleporters and drains, then floor, walls and goals, then sliders and clones.
 const SIZE = 1.05, OVERLAP = (SIZE - 1) / 2;
-const TILE_LAYERS = ['~', 'TtD', '.#G'];
+const TILE_LAYERS = ['~', 'TtO', '.#G'];
 
 const storage = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
@@ -210,7 +210,7 @@ function render() {
     state().sliders.forEach(p => draw('slider', p, p));
   }
   state().clones.forEach((p, i) => {
-    const stuck = !anim && game.level.tile(p) === 'D';
+    const stuck = !anim && game.level.tile(p) === 'O';
     draw(stuck ? 'clone-disabled' : 'clone', anim ? anim.before.clones[i] : p, p);
   });
 }
@@ -282,7 +282,7 @@ addEventListener('resize', () => { drawStars(); resize(); render(); });
 
 // Pages
 
-const KIND_NAMES = { '2-0': '2 clones', '2-1': '2 clones, sliders', '3-0': '3 clones', '3-1': '3 clones, sliders' };
+const KIND_NAMES = { '2-0': '2 clones', '2-1': '2 clones, sliders', '3-0': '3 clones', '3-1': '3 clones, sliders', '4-0': '4 clones' };
 const TIERS = ['easy', 'medium', 'hard'];
 const pct = x => `${Math.round(x * 100)}%`;
 const thousands = x => x == null ? '–' : `${(x / 1000).toFixed(1)}k`;
