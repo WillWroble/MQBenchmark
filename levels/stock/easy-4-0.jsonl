@@ -1,0 +1,2 @@
+{"seed": 0, "text": "G......\n_.#AB.#\n..#G.#_\n.G..CD_\n_G...._\n_......\n_....._\n_......\n......#\n.._....", "minimum": 12, "solution": "DDLURUULLDLL"}
+{"seed": 1, "text": "#B...._\n#...#.#\n_G...._\n_....D_\n_...C._\n_..G..#\n_.G....\n_.G..A_\n_......\n_...#..", "minimum": 12, "solution": "DLLDRURDDULL"}
