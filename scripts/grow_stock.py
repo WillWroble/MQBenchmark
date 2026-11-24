@@ -4,9 +4,9 @@ Each kind of level has its own file, <tier>-<clones>-<sliders 0/1>.jsonl, with o
 line. New levels continue from the highest seed already in the file, and each is saved as
 soon as it is made, so an interrupted run loses nothing.
 
-Usage: python -m scripts.grow_stock COUNT [KIND ...] [--workers N], where a kind is
-<clones>-<sliders 0/1> (all four by default) and COUNT is how many levels to add for each tier
-of each kind. Fewer workers use less memory, which 3 clones with sliders can need.
+Usage: python -m scripts.grow_stock COUNT [KIND ...] [--tiers TIER ...] [--workers N], where a kind
+is <clones>-<sliders 0/1> (all by default) and COUNT is how many levels to add for each tier
+of each kind. Tiers are easy, medium and hard by default. Fewer workers use less memory, which 3 clones with sliders can need.
 """
 import argparse
 import json
@@ -17,6 +17,7 @@ from mqbench.generator import SLIDERS, TIERS, generate
 
 STOCK = Path(__file__).parent.parent / 'levels' / 'stock'
 KINDS = ['2-0', '3-0', '2-1', '3-1', '4-0']
+DEFAULT_TIERS = ['easy', 'medium', 'hard']
 
 
 def make(tier, clones, sliders, seed):
@@ -24,13 +25,13 @@ def make(tier, clones, sliders, seed):
     return {'seed': seed, 'text': text, 'minimum': len(solution), 'solution': solution}
 
 
-def main(count, kinds=KINDS, workers=None):
+def main(count, kinds=KINDS, tiers=DEFAULT_TIERS, workers=None):
     STOCK.mkdir(parents=True, exist_ok=True)
     with ProcessPoolExecutor(workers) as pool:
         jobs = {}
         for kind in kinds:
             clones, sliders = map(int, kind.split('-'))
-            for tier in TIERS:
+            for tier in tiers:
                 path = STOCK / f'{tier}-{kind}.jsonl'
                 seeds = [json.loads(line)['seed'] for line in path.read_text().splitlines()] if path.exists() else []
                 first = max(seeds, default=-1) + 1
@@ -46,6 +47,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('count', type=int)
     parser.add_argument('kinds', nargs='*', default=KINDS)
+    parser.add_argument('--tiers', nargs='+', choices=TIERS, default=DEFAULT_TIERS)
     parser.add_argument('--workers', type=int)
     args = parser.parse_args()
-    main(args.count, args.kinds, args.workers)
+    main(args.count, args.kinds, args.tiers, args.workers)

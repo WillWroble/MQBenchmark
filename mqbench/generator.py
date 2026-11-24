@@ -10,13 +10,15 @@ import random
 from .engine import CLONES, FLOOR, GOAL, SLIDER, SMOOTH, VOID, WALL, Level
 from .solver import path, search
 
-TIERS = {'easy': (6, 12), 'medium': (13, 24), 'hard': (25, 40)}
+TIERS = {'easy': (6, 12), 'medium': (13, 24), 'hard': (25, 40), 'expert': (50, 80)}
+BOARDS = {'expert': (12, 9)}  # rows and columns of the grid, like the original's big level 11; 10x7 otherwise
 SLIDERS = 2  # sliders in a level of the sliders tier
 
 
-def generate(seed, tier, clones=2, sliders=0, rows=10, cols=7, candidates=10):
+def generate(seed, tier, clones=2, sliders=0, candidates=10):
     """Returns (level text, shortest solution) for the best of `candidates` boards."""
     lo, hi = TIERS[tier]
+    rows, cols = BOARDS.get(tier, (10, 7))
     rng = random.Random(f'{seed}-{tier}-{clones}-{sliders}')
     best, found = None, 0
     while found < candidates:

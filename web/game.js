@@ -283,7 +283,7 @@ addEventListener('resize', () => { drawStars(); resize(); render(); });
 // Pages
 
 const KIND_NAMES = { '2-0': '2 clones', '2-1': '2 clones, sliders', '3-0': '3 clones', '3-1': '3 clones, sliders', '4-0': '4 clones' };
-const TIERS = ['easy', 'medium', 'hard'];
+const TIERS = ['easy', 'medium', 'hard', 'expert'];
 const pct = x => `${Math.round(x * 100)}%`;
 const thousands = x => x == null ? '–' : `${(x / 1000).toFixed(1)}k`;
 

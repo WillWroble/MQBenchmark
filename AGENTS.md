@@ -14,7 +14,7 @@ A no-code spatial planning benchmark for LLMs, built on the puzzle game Mirror Q
 - **Level sets**
   - *Dev set:* the original hand-designed levels, published openly.
   - *Scored set:* procedurally generated levels with exact minimums computed by BFS, generated fresh per evaluation from seeds.
-- **Generated level scope at launch:** walls only, with 2, 3 and 4 clones, plus a sliders tier with 2 and 3 clones. Teleporters and drains are deferred. Boards are 10×7. Clones are A–D and drains are O in the text format.
+- **Generated level scope at launch:** walls only, with 2, 3 and 4 clones, plus a sliders tier with 2 and 3 clones, and an expert tier of 3 clones with minimums of 50–80 moves on 12×9 boards, the size of the original level 11. Teleporters and drains are deferred. Other boards are 10×7. Clones are A–D and drains are O in the text format.
 - **Rules:** generated levels use the original game's rules, extended to N clones.
 - **Model interface:** text only, with the board given as a text matrix (ARC-style). Otherwise the model's experience should match a human player's: the same rules text and the same controls, including undo and reset in interactive mode.
 - **Human interface:** a web version using the original game's art (`Assets/Resources/Textures`; the sprites used in levels are assigned in the `InGame` scene).

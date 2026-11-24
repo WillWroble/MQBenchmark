@@ -59,10 +59,12 @@ def test_dev_solutions_replay(path):
     assert level.solved(state)
 
 
-@pytest.mark.parametrize('clones, sliders', [(2, 0), (3, 0), (2, 2)])
-@pytest.mark.parametrize('tier', TIERS)
-def test_generated_minimum_is_exact(tier, clones, sliders):
-    for seed in range(3):
+@pytest.mark.parametrize('tier, clones, sliders, seeds', [
+    *[(tier, clones, sliders, 3) for tier in ['easy', 'medium', 'hard'] for clones, sliders in [(2, 0), (3, 0), (2, 2)]],
+    ('expert', 3, 0, 1),
+])
+def test_generated_minimum_is_exact(tier, clones, sliders, seeds):
+    for seed in range(seeds):
         text, solution = generate(seed, tier, clones, sliders, candidates=1)
         assert len(solve(Level(text))) == len(solution)
         lo, hi = TIERS[tier]
