@@ -1,10 +1,11 @@
 """Runs models on Mirror Quest levels through OpenRouter, logging every call.
 
-Usage: python -m mqbench.harness MODEL [--mode one-shot|interactive] [--set scored|dev]
+Usage: python -m mqbench.harness MODEL [--mode one-shot|one-shot-minimum|interactive] [--set scored|dev]
        [--seed N] [--per-kind N] [--kinds 2-0 3-0 ...] [--effort LEVEL] [--workers N] [--out FILE]
 
 Each level becomes one JSON line in the output file, with the full conversation, every
 call's tokens, time and cost, and the result. A rerun skips levels already in the file.
+In one-shot-minimum mode the model is told the minimum and must solve the level in exactly that many moves.
 """
 import argparse
 import json
@@ -38,8 +39,9 @@ def board_text(level, state):
     return '\n'.join([level.render(state), *notes])
 
 
-def prompt(mode, level):
-    return TEXT[mode.replace('-', '_')].format(rules=TEXT['rules'], legend=TEXT['legend'], board=board_text(level, level.start))
+def prompt(mode, level, minimum):
+    return TEXT[mode.replace('-', '_')].format(rules=TEXT['rules'], legend=TEXT['legend'], board=board_text(level, level.start),
+                                               minimum=minimum)
 
 
 def last_match(pattern, text):
@@ -90,13 +92,13 @@ def openrouter(model, effort=None):
 def play(complete, mode, level, minimum):
     """Plays one level. Returns the conversation, the log of every call, the finished session and the submitted moves."""
     session = Session(level)
-    messages = [{'role': 'user', 'content': prompt(mode, level)}]
+    messages = [{'role': 'user', 'content': prompt(mode, level, minimum)}]
     calls = []
     while True:
         reply, call = complete(messages)
         calls.append(call)
         messages.append({'role': 'assistant', 'content': reply})
-        if mode == 'one-shot':
+        if mode != 'interactive':
             moves = re.sub(r'[^UDLR]', '', (last_match(r'^\W*MOVES:(.*)$', reply) or '').upper())
             for move in moves:
                 session.act(move)
@@ -123,7 +125,7 @@ def run_level(complete, model, mode, level_id, text, minimum):
     total = lambda key: sum(c[key] or 0 for c in calls)
     return {
         'model': model, 'mode': mode, 'level': level_id, 'minimum': minimum,
-        'solved': session.solved and session.moves <= BUDGET * minimum,
+        'solved': session.solved and session.moves <= (1 if mode == 'one-shot-minimum' else BUDGET) * minimum,
         'reached_goal': session.solved, 'moves': session.moves, 'total_actions': session.actions,
         'submitted': moves, 'calls': len(calls),
         'truncated': any(c['finish_reason'] == 'length' for c in calls),  # ran out of output tokens
@@ -136,11 +138,11 @@ def scored_set(seed, per_kind, kinds=None):
     """A seeded sample of per_kind levels from the stock for each kind of level: {id: (text, minimum)}.
 
     Each kind is sampled on its own, so one kind's stock growing doesn't change another's sample.
-    Kinds are '<clones>-<sliders 0/1>', all by default.
+    Kinds are '<clones>-<sliders 0/1>', optionally with a tier in front ('hard-3-0'); all by default.
     """
     levels = {}
     for path in sorted((LEVELS / 'stock').glob('*.jsonl')):
-        if kinds and path.stem.split('-', 1)[1] not in kinds:
+        if kinds and path.stem.split('-', 1)[1] not in kinds and path.stem not in kinds:
             continue
         stock = sorted((json.loads(line) for line in path.read_text().splitlines()), key=lambda lv: lv['seed'])
         rng = random.Random(f'{seed}-{path.stem}')
@@ -156,11 +158,11 @@ def dev_set():
 def main():
     parser = argparse.ArgumentParser(description='Run a model on Mirror Quest levels.')
     parser.add_argument('model', help='OpenRouter model id, for example anthropic/claude-sonnet-4.5')
-    parser.add_argument('--mode', choices=['one-shot', 'interactive'], default='one-shot')
+    parser.add_argument('--mode', choices=['one-shot', 'one-shot-minimum', 'interactive'], default='one-shot')
     parser.add_argument('--set', choices=['scored', 'dev'], default='scored')
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--per-kind', type=int, default=10)
-    parser.add_argument('--kinds', nargs='*', help='kinds of level to run, as <clones>-<sliders 0/1>; all by default')
+    parser.add_argument('--kinds', nargs='*', help="kinds of level to run, as <clones>-<sliders 0/1>, optionally with a tier ('hard-3-0'); all by default")
     parser.add_argument('--workers', type=int, default=8)
     parser.add_argument('--effort', choices=['low', 'medium', 'high', 'xhigh', 'max'],
                         help='reasoning effort; the provider default if omitted')

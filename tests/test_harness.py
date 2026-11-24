@@ -38,5 +38,5 @@ def test_interactive_stops_at_the_action_cap():
 def test_prompt_shows_the_board_and_hidden_squares():
     level = Level(LEVEL)
     assert board_text(level, (((0, 0), (4, 3)), frozenset())) == 'A....\nG....\n..#..\n.....\n...B.\nA is on a goal.'
-    text = prompt('one-shot', level)
+    text = prompt('one-shot', level, 8)
     assert level.render(level.start) in text and '{' not in text and 'MOVES:' in text
