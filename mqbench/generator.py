@@ -3,7 +3,8 @@
 Random boards are explored exhaustively, and the goals go on squares the clones can reach
 together in a number of moves within the tier, so every level is solvable and its minimum
 is exact. Of several such boards, the one with the most reachable states is kept, since a
-bigger search space makes the route less obvious.
+bigger search space makes the route less obvious. Expert levels instead keep the board and goals
+that take the most states to search before they are reached.
 """
 import random
 
@@ -11,18 +12,20 @@ from .engine import CLONES, FLOOR, GOAL, SLIDER, SMOOTH, VOID, WALL, Level
 from .solver import path, search
 
 TIERS = {'easy': (6, 12), 'medium': (13, 24), 'hard': (25, 40), 'expert': (50, 80)}
-BOARDS = {'expert': (12, 9)}  # rows and columns of the grid, like the original's big level 11; 10x7 otherwise
+# Rows, columns, and the range of walls and holes: expert levels use the 12x9 grid of the original
+# level 11, with more walls and holes so the board isn't wide open.
+BOARDS = {'expert': (12, 9, 15, 25)}
 SLIDERS = 2  # sliders in a level of the sliders tier
 
 
 def generate(seed, tier, clones=2, sliders=0, candidates=10):
     """Returns (level text, shortest solution) for the best of `candidates` boards."""
     lo, hi = TIERS[tier]
-    rows, cols = BOARDS.get(tier, (10, 7))
+    rows, cols, *obstacles = BOARDS.get(tier, (10, 7, 5, 9))
     rng = random.Random(f'{seed}-{tier}-{clones}-{sliders}')
     best, found = None, 0
     while found < candidates:
-        board = random_board(rng, clones, sliders, rows, cols)
+        board = random_board(rng, clones, sliders, rows, cols, obstacles)
         if board is None:
             continue
         level = Level(board)
@@ -36,20 +39,26 @@ def generate(seed, tier, clones=2, sliders=0, candidates=10):
         in_tier = [s for s in goals.values() if lo <= depth[s] <= hi]
         if in_tier:
             found += 1
-            if best is None or len(parents) > best[0]:
-                state = rng.choice(in_tier)
-                best = len(parents), place_goals(board, state[0]), path(parents, state)
+            if tier == 'expert':
+                searched = {s: i for i, s in enumerate(parents)}  # states searched before reaching s
+                state = max(in_tier, key=searched.get)
+                score = searched[state]
+            else:
+                score, state = len(parents), None
+            if best is None or score > best[0]:
+                state = state or rng.choice(in_tier)
+                best = score, place_goals(board, state[0]), path(parents, state)
     return best[1:]
 
 
-def random_board(rng, clones, sliders, rows, cols):
+def random_board(rng, clones, sliders, rows, cols, obstacles):
     """A full board with ragged void edges, like the original levels, and a few random walls and holes."""
     grid = [[FLOOR] * cols for _ in range(rows)]
     for row in grid:
         for c in (0, cols - 1):
             if rng.random() < 0.7:
                 row[c] = VOID
-    for _ in range(rng.randint(5, 9)):
+    for _ in range(rng.randint(*obstacles)):
         grid[rng.randrange(rows)][rng.randrange(cols)] = rng.choice([WALL, WALL, VOID])
     if sliders:
         r0, c0 = rng.randrange(rows), rng.randrange(cols)
