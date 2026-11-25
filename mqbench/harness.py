@@ -75,7 +75,9 @@ def openrouter(model, effort=None):
             time.sleep(wait)
         message = data['choices'][0]['message']
         usage = data.get('usage', {})
-        return message.get('content') or '', {
+        # some providers ignore max_tokens, so a reply over the limit is treated as cut off there
+        over = (usage.get('completion_tokens') or 0) > MAX_TOKENS
+        return '' if over else message.get('content') or '', {
             'seconds': round(time.time() - start, 2),
             'input_tokens': usage.get('prompt_tokens'),
             'output_tokens': usage.get('completion_tokens'),
@@ -84,7 +86,7 @@ def openrouter(model, effort=None):
             'provider': data.get('provider'),
             'reasoning': message.get('reasoning'),
             'reasoning_details': message.get('reasoning_details'),
-            'finish_reason': data['choices'][0].get('finish_reason'),
+            'finish_reason': 'length' if over else data['choices'][0].get('finish_reason'),
         }
     return complete
 
