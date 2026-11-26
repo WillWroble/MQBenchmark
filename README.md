@@ -57,7 +57,7 @@ The headline set has 90 levels: 10 of each tier for 2 clones, 3 clones, and 2 cl
 - **One-shot minimum**: the model is told the minimum, and only a solution of exactly that length counts.
 - **Interactive**: the model sends one action per turn and sees the board after each, with undo and reset as in the game. Undone moves don't count, but the model is capped at 5× the minimum in total actions.
 
-Every model gets the same output limit, 65,536 tokens per call with reasoning included, and a reply cut off at the limit counts as unsolved. Every call logs input, output and reasoning tokens, time and cost, so reasoning efficiency can be reported alongside accuracy. Human baselines come from games played on the web version.
+Every model gets the same output limit, 65,536 tokens per call with reasoning included, and a reply cut off at the limit counts as unsolved. Some providers ignore the limit, so a reply over it also counts as cut off, and calls are cut off after 30 minutes. Every call logs input, output and reasoning tokens, time and cost, so reasoning efficiency can be reported alongside accuracy. Human baselines come from games played on the web version.
 
 ## Results
 
@@ -65,14 +65,17 @@ One-shot, 90-level headline set:
 
 | Model | Solved | Moves / minimum | Output tokens / level | Cost / level |
 |---|---|---|---|---|
+| Claude Fable 5.2 | 97% | 1.20 | 12,267 | $0.50 |
 | GPT-6.2 Astra (high) | 97% | 1.19 | 2,859 | $0.12 |
 | Claude Opus 5.5 | 89% | 1.16 | 18,749 | $0.38 |
+| Gemini 4 Carbon (high) | 83% | 1.17 | 36,830 | $0.37 |
 | Kimi K3.1 Pro (high) | 51% | 1.26 | 28,339 | $0.28 |
-| Gemini 3.1 Pro (high) | 50% | 1.14 | 29,468 | $0.36 |
-| Gemini 3.8 Flash (high) | 44% | 1.12 | 49,144 | $0.19 |
+| Gemini 3.1 Pro (high) | 50% | 1.14 | 29,468 | $0.35 |
+| Gemini 3.8 Flash (high) | 44% | 1.12 | 49,144 | $0.18 |
 | GPT-5.6 Sol (high) | 43% | 1.26 | 14,277 | $0.29 |
+| Grok 4.7 (high) | 42% | 1.22 | 66,727 | $0.43 |
 | GPT-5.6 Sol | 30% | 1.18 | 7,738 | $0.16 |
-| DeepSeek V4 Pro (high) | 26% | 1.17 | 51,177 | $0.20 |
+| DeepSeek V4 Pro (high) | 24% | 1.14 | 51,177 | $0.20 |
 
 Moves / minimum is averaged over solved levels. The live leaderboard, including human results, is on the [Space](https://huggingface.co/spaces/inkling616/mirror-quest).
 
