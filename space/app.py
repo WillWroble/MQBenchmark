@@ -51,6 +51,14 @@ for p in (ROOT / 'levels' / 'stock').glob('*.jsonl'):
 app = FastAPI()
 
 
+@app.middleware('http')
+async def revalidate(request, call_next):
+    """Browsers check for a newer version on every load, so a deploy shows up at once."""
+    response = await call_next(request)
+    response.headers['Cache-Control'] = 'no-cache'
+    return response
+
+
 def load(id_):
     if id_ not in LEVELS:
         raise HTTPException(404, f'No level {id_}')
