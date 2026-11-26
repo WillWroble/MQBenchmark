@@ -64,6 +64,8 @@
     <section>
       <h2>Models</h2>
       <p class="lede">One-shot: the model sees the board once and commits its whole move list. Solved means reaching the goals within 2× the minimum moves, with at most 65,536 output tokens. Cut off means it ran out of tokens before answering; wrong means it answered and failed.</p>
+      <div class="chart" id="model-bars"></div>
+      <div class="chart" id="model-scatter"></div>
       <div class="table" id="models"><p class="lede">No model results yet.</p></div>
       <div class="table" id="model-kinds"></div>
     </section>
@@ -74,6 +76,7 @@
     </section>
   </main>
 </div>
+<div class="tip" id="tip" role="tooltip" hidden></div>
 <script src="engine.js"></script>
 <script src="game.js"></script>
 </body>

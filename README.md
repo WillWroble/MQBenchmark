@@ -63,6 +63,8 @@ Every model gets the same output limit, 65,536 tokens per call with reasoning in
 
 One-shot, 90-level headline set:
 
+![Solved, wrong and cut off per model](leaderboard/models.png)
+
 | Model | Solved | Moves / minimum | Output tokens / level | Cost / level |
 |---|---|---|---|---|
 | Claude Fable 5.2 | 97% | 1.20 | 12,267 | $0.50 |

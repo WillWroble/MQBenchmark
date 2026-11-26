@@ -287,9 +287,82 @@ const TIERS = ['easy', 'medium', 'hard', 'expert'];
 const pct = x => `${Math.round(x * 100)}%`;
 const thousands = x => x == null ? '–' : `${(x / 1000).toFixed(1)}k`;
 
+// Charts
+
+const shortName = model => model.split('/').pop().replace(' (high effort)', ' (high)');
+const OUTCOMES = [['solved', 'Solved', m => m.solve_rate], ['wrong', 'Wrong', m => m.wrong], ['cut', 'Cut off', m => m.truncated]];
+const legend = items => `<p class="legend">${items.map(([c, label]) => `<span style="--c: var(--${c})">${label}</span>`).join('')}</p>`;
+
+function showBars(overall) {
+  $('model-bars').innerHTML = `<h3>Outcome per level</h3>${legend(OUTCOMES)}<div class="bars">${overall.map(m => `
+    <span class="name">${shortName(m.model)}</span>
+    <div class="track">${OUTCOMES.filter(([, , f]) => f(m) > 0).map(([c, label, f]) =>
+      `<i class="${c}" style="flex: ${f(m)}" data-tip="${shortName(m.model)}\n${label}: ${pct(f(m))} of ${m.levels} levels"></i>`).join('')}</div>
+    <span class="value">${pct(m.solve_rate)}</span>`).join('')}</div>`;
+}
+
+let scatterData = null;
+
+// Solve rate against output tokens on a log scale. Labels go beside their dot where they fit,
+// and are left to the tooltip where they don't.
+function showScatter(overall = scatterData) {
+  scatterData = overall;
+  const box = $('model-scatter');
+  const w = box.parentElement.clientWidth - 36, h = 300, left = 40, right = 12, top = 10, bottom = 34;
+  if (!overall || $('leaderboard').hidden || w <= 0) return;
+  const ticks = [1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5];
+  const lo = Math.log10(ticks[0]), hi = Math.log10(ticks.at(-1));
+  const x = t => left + (Math.log10(t) - lo) / (hi - lo) * (w - left - right);
+  const y = r => top + (1 - r) * (h - top - bottom);
+  const measure = document.createElement('canvas').getContext('2d');
+  measure.font = '12px Inter, system-ui, sans-serif';
+  const taken = overall.map(m => ({ x0: x(m.output_tokens) - 6, x1: x(m.output_tokens) + 6, y0: y(m.solve_rate) - 6, y1: y(m.solve_rate) + 6 }));
+  const overlaps = b => b.x0 < left || b.x1 > w - right || b.y0 < 0 || b.y1 > h - bottom ||
+    taken.some(t => b.x0 < t.x1 && t.x0 < b.x1 && b.y0 < t.y1 && t.y0 < b.y1);
+  const labels = overall.map(m => {
+    const name = shortName(m.model), tw = measure.measureText(name).width, px = x(m.output_tokens), py = y(m.solve_rate);
+    const spots = [[px + 9, py + 4, 'start'], [px - 9, py + 4, 'end'], [px, py - 10, 'middle'], [px, py + 18, 'middle']];
+    for (const [lx, ly, anchor] of spots) {
+      const x0 = anchor === 'start' ? lx : anchor === 'end' ? lx - tw : lx - tw / 2;
+      const b = { x0, x1: x0 + tw, y0: ly - 11, y1: ly + 3 };
+      if (!overlaps(b)) { taken.push(b); return `<text class="label" x="${lx}" y="${ly}" text-anchor="${anchor}">${name}</text>`; }
+    }
+    return '';
+  });
+  const compact = t => `${t / 1e3}K`;
+  box.innerHTML = `<h3>Solve rate against output tokens per level</h3>
+    <svg class="scatter" width="${w}" height="${h}" role="img" aria-label="Solve rate against output tokens per level for each model">
+      ${[0, 0.25, 0.5, 0.75, 1].map(r => `<line class="grid" x1="${left}" x2="${w - right}" y1="${y(r)}" y2="${y(r)}"/>
+        <text class="axis" x="${left - 8}" y="${y(r) + 4}" text-anchor="end">${r * 100}%</text>`).join('')}
+      ${ticks.map(t => `<text class="axis" x="${x(t)}" y="${h - bottom + 18}" text-anchor="middle">${compact(t)}</text>`).join('')}
+      <text class="axis" x="${(left + w - right) / 2}" y="${h - 2}" text-anchor="middle">Output tokens per level (log scale)</text>
+      ${overall.map(m => `<circle class="hit" cx="${x(m.output_tokens)}" cy="${y(m.solve_rate)}" r="12"
+          data-tip="${shortName(m.model)}\nSolved: ${pct(m.solve_rate)}\nTokens per level: ${thousands(m.output_tokens)}\nCost per level: $${(m.cost ?? 0).toFixed(2)}"/>
+        <circle class="dot" cx="${x(m.output_tokens)}" cy="${y(m.solve_rate)}" r="5" pointer-events="none"/>`).join('')}
+      ${labels.join('')}
+    </svg>`;
+}
+addEventListener('resize', () => showScatter());
+
+// Cells of the by-kind table are shaded by solve rate, one hue from clear to full.
+const heatCell = rate => rate === undefined ? '<td class="num">–</td>'
+  : `<td class="num heat" style="background: rgb(17 159 204 / ${0.08 + 0.72 * rate})">${pct(rate)}</td>`;
+
+// One tooltip for every chart: marks carry their text in data-tip.
+document.addEventListener('pointermove', e => {
+  const target = e.target.closest?.('[data-tip]'), tip = $('tip');
+  tip.hidden = !target;
+  if (!target) return;
+  tip.textContent = target.dataset.tip;
+  tip.style.left = `${Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8)}px`;
+  tip.style.top = `${e.clientY + 14}px`;
+});
+
 function showModels(models) {
   const overall = models.filter(m => m.kind === 'all').sort((a, b) => b.solve_rate - a.solve_rate);
   if (!overall.length) return;
+  showBars(overall);
+  showScatter(overall);
   $('models').innerHTML = `<table>
     <thead><tr><th>Model</th><th class="num">Levels</th><th class="num">Solved</th><th class="num">Cut off</th><th class="num">Wrong</th>
       <th class="num">Moves vs minimum</th><th class="num">Tokens per level</th><th class="num">Tokens per solve</th><th class="num">Cost per level</th></tr></thead>
@@ -304,9 +377,9 @@ function showModels(models) {
     .sort((a, b) => split(a)[0].localeCompare(split(b)[0]) || split(a)[1] - split(b)[1]);
   const cell = (model, kind) => models.find(m => m.model === model && m.kind === kind);
   $('model-kinds').innerHTML = `<table>
-    <thead><tr><th>Solved, by kind of level</th>${overall.map(m => `<th class="num">${m.model}</th>`).join('')}</tr></thead>
+    <thead><tr><th>Solved, by kind of level</th>${overall.map(m => `<th class="num">${shortName(m.model)}</th>`).join('')}</tr></thead>
     <tbody>${kinds.map(k => `<tr><td>${KIND_NAMES[split(k)[0]]} · ${k.split('-')[0]}</td>
-      ${overall.map(m => `<td class="num">${cell(m.model, k) ? pct(cell(m.model, k).solve_rate) : '–'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      ${overall.map(m => heatCell(cell(m.model, k)?.solve_rate)).join('')}</tr>`).join('')}</tbody></table>`;
 }
 
 async function showLeaderboard() {

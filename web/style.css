@@ -2,6 +2,8 @@
 :root {
   --space: #05060d; --panel: #0f1220; --edge: #2b3042; --ink: #dce6e3; --muted: #8b94a3;
   --stone: #c3d4d0; --blue: #15b4e6; --red: #e3262a;
+  /* chart marks, checked for colour-blind separation against --panel */
+  --solved: #119fcc; --wrong: #e76624; --cut: #4d5468; --grid: #1f2434;
   --pixel: 'Silkscreen', 'Courier New', monospace; --body: 'Inter', system-ui, sans-serif;
   color-scheme: dark;
 }
@@ -73,3 +75,30 @@ th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--edg
 th { font: 400 12px var(--pixel); color: var(--muted); }
 td.num, th.num { text-align: right; }
 @media (prefers-reduced-motion: reduce) { button:active { transform: none; } }
+
+/* Charts */
+.chart { margin-top: 16px; background: var(--panel); border: 2px solid var(--edge); padding: 14px 16px; }
+.chart:empty { display: none; }
+.chart h3 { margin: 0 0 10px; font: 400 13px var(--pixel); color: var(--stone); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+.legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 2px; background: var(--c); }
+.bars { display: grid; grid-template-columns: max-content minmax(0, 1fr) 3.5em; gap: 6px 10px; align-items: center; font-size: 13px; }
+.bars .name { color: var(--ink); white-space: nowrap; }
+.bars .value { color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.track { display: flex; gap: 2px; height: 14px; }
+.track i { height: 100%; }
+.track i:first-child { border-radius: 4px 0 0 4px; }
+.track i:last-child { border-radius: 0 4px 4px 0; }
+.track i:only-child { border-radius: 4px; }
+.solved { background: var(--solved); } .wrong { background: var(--wrong); } .cut { background: var(--cut); }
+@media (max-width: 560px) { .bars { grid-template-columns: minmax(0, 1fr) 3.5em; } .bars .name { grid-column: 1 / -1; margin-bottom: -4px; } }
+.scatter { display: block; width: 100%; overflow: visible; font: 12px var(--body); }
+.scatter .grid { stroke: var(--grid); }
+.scatter .axis { fill: var(--muted); }
+.scatter .label { fill: var(--ink); }
+.scatter .dot { fill: var(--solved); stroke: var(--panel); stroke-width: 2; }
+.scatter .hit { fill: transparent; }
+.scatter .hit:hover + .dot, .track i:hover { filter: brightness(1.25); }
+.heat { color: #fff; box-shadow: inset 0 0 0 1px var(--space); }
+.tip { position: fixed; z-index: 10; pointer-events: none; background: var(--space); border: 1px solid var(--edge); padding: 6px 10px;
+  font-size: 13px; color: var(--ink); white-space: pre-line; max-width: 260px; }
