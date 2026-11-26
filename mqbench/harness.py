@@ -28,6 +28,11 @@ TEXT = {p.stem: p.read_text().strip() for p in [ROOT / 'rules.txt', *(ROOT / 'pr
 BUDGET = 2  # a level counts as solved within BUDGET × its minimum moves
 CAP = 5  # interactive mode stops after CAP × the minimum actions, undos and resets included
 MAX_TOKENS = 65536  # output limit per call, reasoning included, the same for every model
+# Some providers ignore MAX_TOKENS, so a call is also cut off after TIME_LIMIT seconds: enough for
+# MAX_TOKENS at 36 tokens a second, slower than any model run so far.
+TIME_LIMIT = 1800
+CUT_OFF = {'length', 'timeout'}
+API = 'https://openrouter.ai/api/v1'
 TILE_NAMES = {GOAL: 'a goal', SMOOTH: 'smooth floor', TELEPORTER: 'a teleporter', EXIT: 'an exit-only teleporter', DRAIN: 'a drain'}
 
 
@@ -49,20 +54,74 @@ def last_match(pattern, text):
     return matches[-1] if matches else None
 
 
+def merge(details):
+    """Joins streamed reasoning fragments that continue the same part."""
+    merged = []
+    for d in details:
+        last = merged[-1] if merged else {}
+        if d.get('type') != 'reasoning.encrypted' and (last.get('type'), last.get('index')) == (d.get('type'), d.get('index')):
+            for key in ['summary', 'text']:
+                if d.get(key):
+                    last[key] = (last.get(key) or '') + d[key]
+        else:
+            merged.append(dict(d))
+    return merged
+
+
+def stream(request, headers):
+    """Reads a streamed reply in the shape of an unstreamed one, hanging up after TIME_LIMIT seconds.
+
+    A reply that is hung up on gets finish_reason 'timeout', and its usage from OpenRouter's record of it.
+    """
+    start, content, reasoning, details, data, finish = time.time(), [], [], [], {}, None
+    with urllib.request.urlopen(request, timeout=TIME_LIMIT) as response:
+        for line in response:
+            if not line.startswith(b'data: {'):
+                continue
+            chunk = json.loads(line[6:])
+            data |= {k: v for k, v in chunk.items() if k != 'choices'}
+            choice = (chunk.get('choices') or [{}])[0]
+            delta = choice.get('delta') or {}
+            content.append(delta.get('content') or '')
+            reasoning.append(delta.get('reasoning') or '')
+            details += delta.get('reasoning_details') or []
+            finish = choice.get('finish_reason') or finish
+            if time.time() - start > TIME_LIMIT and not finish:
+                finish = 'timeout'
+                break
+    if not finish:
+        raise ConnectionError('the stream ended before the reply did')
+    if finish == 'timeout':
+        for wait in [5, 15, 30, 60, 120]:  # the record appears shortly after the call ends
+            time.sleep(wait)
+            try:
+                with urllib.request.urlopen(urllib.request.Request(f"{API}/generation?id={data['id']}", headers=headers)) as response:
+                    record = json.load(response)['data']
+                break
+            except urllib.error.HTTPError as e:
+                if e.code != 404:
+                    raise
+        else:
+            raise RuntimeError(f"no record of {data['id']}")
+        data['usage'] = {'prompt_tokens': record['native_tokens_prompt'], 'completion_tokens': record['native_tokens_completion'],
+                         'completion_tokens_details': {'reasoning_tokens': record['native_tokens_reasoning']}, 'cost': record['usage']}
+    message = {'content': ''.join(content), 'reasoning': ''.join(reasoning) or None, 'reasoning_details': merge(details) or None}
+    return data | {'choices': [{'message': message, 'finish_reason': finish}]}
+
+
 def openrouter(model, effort=None):
     """A client that sends a conversation to a model and returns its reply and the call's log entry."""
     def complete(messages):
         # exclude: false asks for the reasoning text (a summary, for some providers) without changing its effort
         body = json.dumps({'model': model, 'messages': messages, 'usage': {'include': True},
-                           'max_tokens': MAX_TOKENS,
+                           'max_tokens': MAX_TOKENS, 'stream': True,
                            'reasoning': {'exclude': False, **({'effort': effort} if effort else {})}}).encode()
-        request = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions', body, {
-            'Content-Type': 'application/json', 'Authorization': f'Bearer {os.environ.get("OPENROUTER_API_KEY", "proxy")}'})
+        headers = {'Authorization': f'Bearer {os.environ.get("OPENROUTER_API_KEY", "proxy")}'}
+        request = urllib.request.Request(f'{API}/chat/completions', body, headers | {'Content-Type': 'application/json'})
         for wait in [5, 15, 60, 120, None]:
             start = time.time()
             try:
-                with urllib.request.urlopen(request, timeout=1800) as response:
-                    data = json.load(response)
+                data = stream(request, headers)
                 if 'choices' in data and data['choices'][0].get('finish_reason') != 'error':
                     break
                 error = RuntimeError(data.get('error') or 'the provider stopped with an error')
@@ -77,7 +136,8 @@ def openrouter(model, effort=None):
         usage = data.get('usage', {})
         # some providers ignore max_tokens, so a reply over the limit is treated as cut off there
         over = (usage.get('completion_tokens') or 0) > MAX_TOKENS
-        return '' if over else message.get('content') or '', {
+        finish = 'length' if over else data['choices'][0].get('finish_reason')
+        return '' if finish in CUT_OFF else message.get('content') or '', {
             'seconds': round(time.time() - start, 2),
             'input_tokens': usage.get('prompt_tokens'),
             'output_tokens': usage.get('completion_tokens'),
@@ -86,7 +146,7 @@ def openrouter(model, effort=None):
             'provider': data.get('provider'),
             'reasoning': message.get('reasoning'),
             'reasoning_details': message.get('reasoning_details'),
-            'finish_reason': 'length' if over else data['choices'][0].get('finish_reason'),
+            'finish_reason': finish,
         }
     return complete
 
@@ -130,7 +190,7 @@ def run_level(complete, model, mode, level_id, text, minimum):
         'solved': session.solved and session.moves <= (1 if mode == 'one-shot-minimum' else BUDGET) * minimum,
         'reached_goal': session.solved, 'moves': session.moves, 'total_actions': session.actions,
         'submitted': moves, 'calls': len(calls),
-        'truncated': any(c['finish_reason'] == 'length' for c in calls),  # ran out of output tokens
+        'truncated': any(c['finish_reason'] in CUT_OFF for c in calls),  # ran out of output tokens or time
         **{key: total(key) for key in ['input_tokens', 'output_tokens', 'reasoning_tokens', 'cost', 'seconds']},
         'messages': messages, 'call_log': calls,
     }
